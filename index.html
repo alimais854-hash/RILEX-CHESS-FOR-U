@@ -1,0 +1,3691 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<meta name="theme-color" content="#0b0f14">
+<meta name="description" content="RILEX CHESS FU — كوتش شطرنج ذكي بالعربية: دروس متدرّجة، تحليل نقلاتك، وإيلو حقيقي طريقك للـ Grandmaster. كل شي محلي بالمتصفح.">
+<title>RILEX CHESS FU — كوتش شطرنج ذكي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230b0f14'/%3E%3Ctext x='50' y='74' font-size='68' text-anchor='middle' fill='%23e0b44c'%3E%E2%99%9E%3C/text%3E%3C/svg%3E">
+<style>
+/* ===================== الأساسيات ===================== */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#0b0f14; --bg2:#111823; --card:#151d29; --card2:#1a2432; --line:#263142;
+  --txt:#e8eef6; --dim:#9fb0c4; --dim2:#6d8099;
+  --gold:#e0b44c; --gold2:#f6d488; --emer:#3fb97f; --red:#e3564f; --blue:#4b9fe1; --purp:#9b7bea;
+  --lsq:#d7c3a0; --dsq:#8a6240;
+  --r:16px; --rs:10px;
+  --sh:0 10px 30px rgba(0,0,0,.45);
+}
+html,@font-face{font-family:'CairoFallback'; src:local('Cairo'),local('Noto Kufi Arabic'),local('Dubai'),local('Tajawal'); font-display:swap}
+body{margin:0;padding:0}
+@font-face{font-family:'CairoFallback'; src:local('Cairo'),local('Noto Kufi Arabic'),local('Dubai'),local('Tajawal'); font-display:swap}
+body{
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(224,180,76,.10), transparent 60%),
+    radial-gradient(700px 500px at 10% 0%, rgba(75,159,225,.08), transparent 60%),
+    var(--bg);
+  color:var(--txt); font-family:'Cairo','CairoFallback','Noto Kufi Arabic','Tajawal','Segoe UI',Tahoma,sans-serif;
+  min-height:100vh; -webkit-text-size-adjust:100%; overflow-x:hidden;
+}
+button,input,select{font-family:inherit}
+.hide{display:none !important}
+a{color:var(--gold)}
+
+/* ===================== الهيدر ===================== */
+#topbar{
+  position:sticky; top:0; z-index:40; display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:10px 16px; background:rgba(11,15,20,.88); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex; align-items:center; gap:10px; margin-inline-end:auto}
+.logo{
+  width:42px;height:42px;display:grid;place-items:center;border-radius:12px;font-size:25px;
+  background:linear-gradient(145deg,#243044,#141c28);
+  border:1px solid #33425a; color:var(--gold); box-shadow:inset 0 1px 0 rgba(255,255,255,.06)
+}
+.bt{font-weight:900; font-size:19px; letter-spacing:.3px; line-height:1.1}
+.bt em{color:var(--gold); font-style:normal}
+.bs{font-size:11px; color:var(--dim2); line-height:1.3}
+.tb-right{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.chip{
+  display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;
+  background:var(--card2); border:1px solid var(--line); font-size:13px; font-weight:700; white-space:nowrap
+}
+.chip b{color:var(--gold)}
+.chip.user b{color:var(--blue)}
+
+/* ===================== أزرار ===================== */
+.btn{
+  border:1px solid transparent; border-radius:12px; padding:11px 18px; font-size:15px; font-weight:700;
+  cursor:pointer; background:linear-gradient(180deg,var(--gold2),var(--gold)); color:#241b05;
+  transition:transform .12s ease, filter .15s ease, box-shadow .15s; box-shadow:0 4px 14px rgba(224,180,76,.22)
+}
+.btn:hover{filter:brightness(1.06); transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none; box-shadow:none}
+.btn.ghost{background:var(--card2); color:var(--txt); border-color:var(--line); box-shadow:none; font-size:14px; padding:9px 14px}
+.btn.ghost:hover{background:#202c3d}
+.btn.em{background:linear-gradient(180deg,#56d79a,var(--emer)); color:#06281a; box-shadow:0 4px 14px rgba(63,185,127,.22)}
+.btn.rd{background:linear-gradient(180deg,#f07a74,var(--red)); color:#2b0a08; box-shadow:0 4px 14px rgba(227,86,79,.2)}
+.btn.bl{background:linear-gradient(180deg,#6fb6ea,var(--blue)); color:#04203a; box-shadow:0 4px 14px rgba(75,159,225,.2)}
+.btn.sm{padding:7px 12px; font-size:13px; border-radius:10px}
+.btn.wide{width:100%}
+.btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+
+/* ===================== بطاقات وعناوين ===================== */
+main{max-width:1240px; margin:0 auto; padding:18px 14px 70px}
+.card{background:linear-gradient(180deg,var(--card),#121a25); border:1px solid var(--line);
+  border-radius:var(--r); padding:18px; box-shadow:var(--sh); margin-bottom:16px}
+.section-title{
+  display:flex; align-items:center; gap:10px; margin:0 0 14px; padding:12px 18px; border-radius:14px;
+  font-size:19px; font-weight:900; letter-spacing:.3px; color:#120d02;
+  background:linear-gradient(90deg,var(--gold2),var(--gold) 55%,rgba(224,180,76,.25));
+  box-shadow:0 6px 18px rgba(224,180,76,.14); border:1px solid rgba(255,255,255,.12)
+}
+.section-title.bl{background:linear-gradient(90deg,#8fc8f3,var(--blue) 55%,rgba(75,159,225,.22)); color:#03172a}
+.section-title.em{background:linear-gradient(90deg,#74dfab,var(--emer) 55%,rgba(63,185,127,.22)); color:#042315}
+.section-title.rd{background:linear-gradient(90deg,#f49a95,var(--red) 55%,rgba(227,86,79,.22)); color:#2b0a08}
+.section-title.pp{background:linear-gradient(90deg,#c2abf5,var(--purp) 55%,rgba(155,123,234,.22)); color:#190b33}
+.section-title .ico{font-size:22px}
+.sub{color:var(--dim); font-size:14px; line-height:1.8}
+.grid{display:grid; gap:16px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.layout{display:grid; grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr); gap:16px; align-items:start}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.g2,.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}main{padding:12px 10px 60px}.card{padding:14px}}
+
+/* ===================== إحصائيات ===================== */
+.stat{background:var(--card2); border:1px solid var(--line); border-radius:var(--rs); padding:12px; text-align:center}
+.stat .v{font-size:23px; font-weight:900; color:var(--gold); line-height:1.2}
+.stat .l{font-size:11.5px; color:var(--dim2); margin-top:3px}
+.stat.b .v{color:var(--blue)} .stat.e .v{color:var(--emer)} .stat.r .v{color:var(--red)}
+.bar{height:11px; background:#0c121b; border:1px solid var(--line); border-radius:999px; overflow:hidden}
+.bar>i{display:block; height:100%; background:linear-gradient(90deg,var(--gold),#fff0c4); border-radius:999px; transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.bar.em>i{background:linear-gradient(90deg,var(--emer),#a9f3cf)}
+.wk{margin-bottom:11px}
+.wk .top{display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:5px; font-weight:700}
+.wk .top span{color:var(--dim)}
+
+/* ===================== الكوتش ===================== */
+.coach{display:flex; gap:14px; align-items:flex-start}
+.avatar{
+  flex:0 0 58px; width:58px; height:58px; border-radius:16px; display:grid; place-items:center; font-size:30px;
+  background:linear-gradient(145deg,#2b3850,#161f2c); border:1px solid #3a4b66; color:var(--gold);
+  box-shadow:0 6px 18px rgba(0,0,0,.4)
+}
+.bubble{background:var(--card2); border:1px solid var(--line); border-radius:14px; padding:13px 15px; line-height:1.95; font-size:14.5px; flex:1; min-width:0}
+.bubble b{color:var(--gold2)}
+.bubble .nm{font-size:12px; color:var(--dim2); font-weight:700; letter-spacing:1px; margin-bottom:4px}
+.feed{max-height:330px; overflow:auto; display:flex; flex-direction:column; gap:9px}
+.msg{background:var(--card2); border:1px solid var(--line); border-right:3px solid var(--gold); border-radius:10px; padding:9px 12px; font-size:13.5px; line-height:1.8}
+.msg b{color:var(--gold2)}
+.msg.bad{border-right-color:var(--red)} .msg.good{border-right-color:var(--emer)} .msg.info{border-right-color:var(--blue)}
+.rules{margin:0; padding:0; list-style:none}
+.rules li{position:relative; padding:9px 34px 9px 12px; margin-bottom:8px; background:var(--card2);
+  border:1px solid var(--line); border-radius:10px; font-size:14px; line-height:1.85}
+.rules li::before{content:"♟"; position:absolute; right:11px; top:9px; color:var(--gold); font-size:14px}
+.rules li b{color:var(--gold2)}
+.see{background:rgba(75,159,225,.09); border:1px solid rgba(75,159,225,.3); border-radius:10px; padding:11px 13px; font-size:14px; line-height:1.85; margin-top:12px}
+.see::before{content:"👁 "; }
+
+/* ===================== الرقعة ===================== */
+.board-box{display:flex; flex-direction:column; align-items:center; gap:10px}
+.board-outer{position:relative; padding:14px; border-radius:18px;
+  background:linear-gradient(145deg,#28344a,#141b26);
+  border:1px solid #33425a; box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.board{direction:ltr; display:grid; grid-template-columns:repeat(8,1fr); grid-template-rows:repeat(8,1fr);
+  width:min(86vw,520px); height:min(86vw,520px); border-radius:8px; overflow:hidden; position:relative;
+  touch-action:manipulation; user-select:none; -webkit-user-select:none}
+.board.mini{width:min(78vw,330px); height:min(78vw,330px)}
+.sq{position:relative; display:grid; place-items:center; cursor:pointer}
+.sq.l{background:var(--lsq)} .sq.d{background:var(--dsq)}
+.sq .pc{font-size:min(10vw,62px); line-height:1; pointer-events:none; position:relative; z-index:3; transition:transform .08s}
+.board.mini .sq .pc{font-size:min(8.6vw,38px)}
+.pc.w{color:#fffdf7; text-shadow:0 0 1px #3a2a12,0 1px 0 #6b543a,1px 0 0 #6b543a,-1px 0 0 #6b543a,0 -1px 0 #6b543a,0 3px 5px rgba(0,0,0,.45)}
+.pc.b{color:#1d2127; text-shadow:0 0 1px #000,0 1px 0 #5b636e,1px 0 0 #5b636e,-1px 0 0 #5b636e,0 -1px 0 #5b636e,0 3px 5px rgba(0,0,0,.45)}
+.sq.last::after{content:""; position:absolute; inset:0; background:rgba(224,180,76,.34); z-index:1}
+.sq.sel::after{content:""; position:absolute; inset:0; background:rgba(63,185,127,.42); z-index:1}
+.sq.hl::after{content:""; position:absolute; inset:0; background:rgba(75,159,225,.36); z-index:1}
+.sq.chk::before{content:""; position:absolute; inset:0; z-index:2;
+  background:radial-gradient(circle at 50% 50%, rgba(227,86,79,.95), rgba(227,86,79,.35) 55%, transparent 72%)}
+.sq .dot{position:absolute; width:26%; height:26%; border-radius:50%; background:rgba(20,30,20,.34); z-index:2; pointer-events:none}
+.sq .ring{position:absolute; inset:7%; border-radius:50%; border:5px solid rgba(227,86,79,.55); z-index:2; pointer-events:none}
+.sq .cd{position:absolute; font-size:10px; font-weight:800; color:rgba(40,30,15,.6); z-index:4; pointer-events:none}
+.sq .cd.f{bottom:1px; right:3px} .sq .cd.r{top:1px; left:3px}
+.arrows{position:absolute; inset:0; z-index:5; pointer-events:none; width:100%; height:100%}
+.flipwrap{display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap}
+
+/* ===================== الساعة وشريط التقييم ===================== */
+.clocks{display:flex; gap:10px; width:min(86vw,520px); justify-content:space-between}
+.clock{flex:1; background:var(--card2); border:1px solid var(--line); border-radius:12px; padding:9px 13px; text-align:center}
+.clock .t{font-size:24px; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:1px}
+.clock .n{font-size:11.5px; color:var(--dim2)}
+.clock.on{border-color:var(--gold); box-shadow:0 0 0 2px rgba(224,180,76,.18) inset}
+.clock.low .t{color:var(--red)}
+.evalbar{position:relative; height:20px; border-radius:999px; overflow:hidden; background:#1b1f24; border:1px solid var(--line)}
+.evalbar>i{position:absolute; inset:0 auto 0 0; background:linear-gradient(90deg,#fffdf7,#d9d2c2); transition:width .4s ease}
+.evalbar>span{position:absolute; inset:0; display:grid; place-items:center; font-size:12px; font-weight:900;
+  color:#fff; direction:ltr; z-index:2; text-shadow:0 1px 2px #000,0 0 4px #000; letter-spacing:.5px}
+
+/* ===================== قائمة النقلات ===================== */
+.moves{display:grid; grid-template-columns:34px 1fr 1fr; gap:4px; font-size:13.5px; max-height:300px; overflow:auto}
+.moves .n{color:var(--dim2); text-align:center; padding:4px 0; direction:ltr}
+.moves .m{padding:4px 7px; border-radius:7px; background:var(--card2); direction:ltr; text-align:left; font-weight:700}
+.c-best{color:#8ef0bd} .c-great{color:#b8e986} .c-good{color:#dfe7ef}
+.c-inacc{color:#f3d072} .c-mistake{color:#f0a05a} .c-blunder{color:#ff7b72}
+table.tbl{width:100%; border-collapse:collapse; font-size:13.5px}
+table.tbl th,table.tbl td{padding:8px 9px; border-bottom:1px solid var(--line); text-align:center}
+table.tbl td.num{direction:ltr; font-variant-numeric:tabular-nums}
+table.tbl th{color:var(--dim2); font-size:12px; font-weight:700}
+table.tbl tr:last-child td{border-bottom:0}
+.tag{display:inline-block; padding:2px 9px; border-radius:999px; font-size:11.5px; font-weight:800}
+.tag.w{background:rgba(63,185,127,.17); color:#7ee2ad} .tag.l{background:rgba(227,86,79,.17); color:#ff9c95}
+.tag.d{background:rgba(159,176,196,.15); color:var(--dim)}
+
+/* ===================== إدخالات ===================== */
+label.fl{display:block; font-size:13px; color:var(--dim); margin:12px 0 6px; font-weight:700}
+input.inp,select.inp{width:100%; padding:12px 14px; border-radius:12px; background:#0d141d; color:var(--txt);
+  border:1px solid var(--line); font-size:15px; outline:none}
+input.inp:focus,select.inp:focus{border-color:var(--gold); box-shadow:0 0 0 3px rgba(224,180,76,.12)}
+.tabs{display:flex; gap:8px; background:#0d141d; padding:5px; border-radius:14px; border:1px solid var(--line); margin-bottom:6px}
+.tabs button{flex:1; padding:10px; border:0; border-radius:10px; background:transparent; color:var(--dim);
+  font-weight:800; font-size:14.5px; cursor:pointer}
+.tabs button.on{background:linear-gradient(180deg,var(--gold2),var(--gold)); color:#241b05}
+.acct{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 13px; border-radius:11px;
+  background:var(--card2); border:1px solid var(--line); margin-bottom:8px; cursor:pointer}
+.acct:hover{border-color:var(--gold)}
+.acct .nm{font-weight:800}
+.acct .me{font-size:11.5px; color:var(--dim2)}
+.err{background:rgba(227,86,79,.12); border:1px solid rgba(227,86,79,.4); color:#ffb4ae;
+  padding:10px 13px; border-radius:11px; font-size:13.5px; margin-top:12px; line-height:1.7}
+.ok{background:rgba(63,185,127,.12); border:1px solid rgba(63,185,127,.4); color:#a4eccb;
+  padding:10px 13px; border-radius:11px; font-size:13.5px; margin-top:12px; line-height:1.7}
+
+/* ===================== تراكب / مودال / توست ===================== */
+#overlay{position:fixed; inset:0; z-index:90; background:rgba(4,7,11,.72); backdrop-filter:blur(4px);
+  display:grid; place-items:center; padding:18px}
+#modal{background:linear-gradient(180deg,var(--card),#111822); border:1px solid var(--line); border-radius:18px;
+  padding:20px; width:min(460px,94vw); box-shadow:0 24px 60px rgba(0,0,0,.6)}
+#modal h3{margin:0 0 10px; font-size:18px}
+#modal .mb{color:var(--dim); font-size:14px; line-height:1.9}
+.promo{display:flex; gap:10px; justify-content:center; margin-top:16px}
+.promo button{width:62px; height:62px; font-size:38px; border-radius:14px; background:var(--card2);
+  border:1px solid var(--line); color:#fffdf7; cursor:pointer; line-height:1}
+.promo button:hover{border-color:var(--gold); background:#202c3d}
+#toasts{position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:100;
+  display:flex; flex-direction:column; gap:8px; align-items:center; width:max-content; max-width:92vw}
+.toast{background:#1b2433; border:1px solid var(--line); border-right:3px solid var(--gold);
+  padding:11px 16px; border-radius:11px; font-size:14px; box-shadow:var(--sh); animation:up .25s ease}
+.toast.bad{border-right-color:var(--red)} .toast.good{border-right-color:var(--emer)}
+@keyframes up{from{opacity:0; transform:translateY(10px)}to{opacity:1; transform:none}}
+#thinking{position:fixed; bottom:18px; inset-inline-start:18px; z-index:60; background:#1b2433;
+  border:1px solid var(--line); border-radius:999px; padding:9px 16px; font-size:13.5px; font-weight:700;
+  box-shadow:var(--sh); display:flex; align-items:center; gap:9px}
+.spin{width:14px;height:14px;border:2px solid var(--gold); border-top-color:transparent; border-radius:50%;
+  animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#loading{position:fixed; inset:0; z-index:200; display:grid; place-items:center; background:var(--bg)}
+.result-banner{text-align:center; padding:22px; border-radius:var(--r); margin-bottom:16px;
+  border:1px solid var(--line); background:var(--card2)}
+.result-banner .big{font-size:30px; font-weight:900; line-height:1.3}
+.result-banner .delta{font-size:19px; font-weight:900; margin-top:6px; direction:ltr}
+.win{color:var(--emer)} .loss{color:var(--red)} .draw{color:var(--dim)}
+.ring{position:relative; width:118px; height:118px; margin:0 auto}
+.ring canvas{width:118px; height:118px}
+.ring .in{position:absolute; inset:0; display:grid; place-items:center; text-align:center}
+.ring .in b{font-size:26px; display:block; line-height:1.1} .ring .in s{font-size:11px; color:var(--dim2); text-decoration:none}
+.chartbox{width:100%; height:170px; position:relative}
+.chartbox canvas{width:100%; height:170px; display:block}
+.pill{display:inline-block; padding:3px 10px; border-radius:999px; background:var(--card2);
+  border:1px solid var(--line); font-size:12px; color:var(--dim); margin:2px}
+.footer{text-align:center; color:var(--dim2); font-size:12px; padding:18px 10px; line-height:2}
+.kbd{background:#0d141d; border:1px solid var(--line); border-radius:6px; padding:1px 7px; font-size:12px; direction:ltr; display:inline-block}
+</style>
+</head>
+<body>
+
+<div id="loading"><div style="text-align:center">
+  <div class="logo" style="width:70px;height:70px;font-size:40px;margin:0 auto 14px">♞</div>
+  <div style="font-weight:900;font-size:22px">RILEX <span style="color:var(--gold)">CHESS FU</span></div>
+  <div style="color:var(--dim2);font-size:13px;margin-top:6px">عم نجهّز الكوتش…</div>
+</div></div>
+
+<header id="topbar" class="hide">
+  <div class="brand">
+    <div class="logo">♞</div>
+    <div>
+      <div class="bt">RILEX <em>CHESS FU</em></div>
+      <div class="bs">كوتشك الذكي — الطريق للـ Grandmaster</div>
+    </div>
+  </div>
+  <div class="tb-right">
+    <div class="chip" id="chip-elo">Elo <b>—</b></div>
+    <div class="chip user" id="chip-user">👤 <b>—</b></div>
+    <button class="btn ghost" data-nav="home">🏠 الرئيسية</button>
+    <button class="btn ghost" data-nav="settings">⚙️ الإعدادات</button>
+    <button class="btn ghost" id="btn-logout">خروج</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= شاشة الدخول ================= -->
+<section class="screen hide" id="scr-auth">
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2 class="section-title"><span class="ico">♞</span> RILEX CHESS FU — ابدأ</h2>
+        <p class="sub">كوتش شطرنج ذكي بالعربية. بيعطيك درس على قياس ضعفك، بيختبرك بمباراة، بيحلّل كل نقلة، وبيحدّث إيلوك. <b>كل البيانات والتحليل محليّة بمتصفحك</b> — ولا بايت يطلع لبرا.</p>
+        <div class="tabs" id="auth-tabs">
+          <button class="on" data-t="login">دخول</button>
+          <button data-t="reg">حساب جديد</button>
+        </div>
+        <form id="auth-form" autocomplete="off">
+          <label class="fl" for="au-user">اسم المستخدم</label>
+          <input class="inp" id="au-user" maxlength="24" placeholder="مثلاً: farouk" autocomplete="username">
+          <label class="fl" for="au-pass">كلمة السر</label>
+          <input class="inp" id="au-pass" type="password" maxlength="64" placeholder="••••••••" autocomplete="current-password">
+          <div id="reg-extra" class="hide">
+            <label class="fl" for="au-pass2">تأكيد كلمة السر</label>
+            <input class="inp" id="au-pass2" type="password" maxlength="64" placeholder="••••••••" autocomplete="new-password">
+            <label class="fl" for="au-elo">إيلو البداية التقديري <span style="color:var(--dim2)">(اختياري — عدّله لاحقاً)</span></label>
+            <input class="inp" id="au-elo" type="number" min="400" max="2600" step="25" value="800">
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="au-go" type="submit">دخول</button>
+            <button class="btn ghost" id="au-import" type="button">📥 استيراد حساب من ملف</button>
+          </div>
+        </form>
+        <div id="auth-msg"></div>
+        <input type="file" id="file-in" accept=".rilex,.json,application/json" class="hide">
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2 class="section-title bl"><span class="ico">👥</span> حسابات على هذا الجهاز</h2>
+        <div id="acct-list"><p class="sub">ما في حسابات محفوظة بعد. إعمل حساب جديد أو إستورد ملف <span class="kbd">.rilex</span>.</p></div>
+      </div>
+      <div class="card">
+        <h2 class="section-title em"><span class="ico">🔐</span> خصوصيتك</h2>
+        <p class="sub">
+          • كلمة السر تُخزَّن <b>هاش فقط</b> (PBKDF2-SHA256، 210,000 تكرار) — مش نص صريح.<br>
+          • ملف النسخة الاحتياطية مشفّر <b>AES-GCM 256</b> بمفتاح من كلمة سر تشفير تختارها إنت.<br>
+          • ما في سيرفر ولا API — المحرك والكوتش شغّالين كلياً جوا متصفحك.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= الرئيسية ================= -->
+<section class="screen hide" id="scr-home">
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2 class="section-title"><span class="ico">🎙️</span> لوحة الكوتش RILEX</h2>
+        <div class="coach">
+          <div class="avatar">♞</div>
+          <div class="bubble"><div class="nm">RILEX</div><div id="home-coach">…</div></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="btn-session">🚀 ابدأ جلسة تدريب</button>
+          <button class="btn ghost" id="btn-quick">♟️ مباراة سريعة</button>
+          <button class="btn ghost" id="btn-drill-only">🧩 تمرين بس</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title bl"><span class="ico">📈</span> تطوّر الإيلو</h2>
+        <div class="chartbox"><canvas id="elo-chart"></canvas></div>
+        <div style="margin-top:14px">
+          <div class="wk"><div class="top"><span>الطريق للـ Grandmaster (2500)</span><span id="gm-left">—</span></div>
+            <div class="bar"><i id="gm-bar" style="width:0%"></i></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title pp"><span class="ico">📜</span> سجل المباريات</h2>
+        <div id="hist-box"><p class="sub">لسّا ما لعبت مباريات.</p></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2 class="section-title em"><span class="ico">🏅</span> مستواك</h2>
+        <div class="grid g2">
+          <div class="stat"><div class="v" id="st-elo">—</div><div class="l">الإيلو الحالي</div></div>
+          <div class="stat b"><div class="v" id="st-peak">—</div><div class="l">أعلى إيلو</div></div>
+          <div class="stat e"><div class="v" id="st-games">—</div><div class="l">مباريات</div></div>
+          <div class="stat"><div class="v" id="st-acc">—</div><div class="l">متوسط الدقّة</div></div>
+        </div>
+        <p class="sub" style="margin-top:12px;text-align:center">
+          التصنيف: <b id="st-band" style="color:var(--gold)">—</b><br>
+          <span id="st-wld" style="font-size:13px"></span>
+        </p>
+      </div>
+      <div class="card">
+        <h2 class="section-title rd"><span class="ico">🎯</span> نقاط الضعف</h2>
+        <div id="weak-box"><p class="sub">بعد أول مباراة رح أحدّد ضعفك بالضبط.</p></div>
+      </div>
+      <div class="card">
+        <h2 class="section-title"><span class="ico">🧩</span> التمارين</h2>
+        <div class="grid g2">
+          <div class="stat e"><div class="v" id="st-dsolv">0</div><div class="l">تمارين محلولة</div></div>
+          <div class="stat"><div class="v" id="st-less">0</div><div class="l">دروس مكتملة</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= الدرس ================= -->
+<section class="screen hide" id="scr-lesson">
+  <div class="card">
+    <h2 class="section-title"><span class="ico">📚</span> <span id="les-head">الدرس</span></h2>
+    <div class="coach">
+      <div class="avatar">♞</div>
+      <div class="bubble"><div class="nm">RILEX — تشخيص</div><div id="les-intro"></div></div>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="card">
+      <h2 class="section-title bl"><span class="ico">✍️</span> <span id="les-title">—</span></h2>
+      <ul class="rules" id="les-rules"></ul>
+      <div class="see" id="les-see"></div>
+      <div class="btn-row">
+        <button class="btn em" id="btn-to-drill">🧩 جرّب التمرين</button>
+        <button class="btn" id="btn-to-game">♟️ مباراة الاختبار</button>
+        <button class="btn ghost" data-nav="home">لاحقاً</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="section-title em"><span class="ico">🔍</span> المثال على الرقعة</h2>
+      <div class="board-box">
+        <div class="board-outer"><div class="board mini" id="les-board"></div></div>
+        <p class="sub" style="text-align:center" id="les-turn"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= التمرين ================= -->
+<section class="screen hide" id="scr-drill">
+  <div class="layout">
+    <div class="card">
+      <h2 class="section-title pp"><span class="ico">🧩</span> التمرين — لاقي أفضل نقلة</h2>
+      <div class="board-box">
+        <div class="board-outer"><div class="board" id="drill-board"></div></div>
+        <p class="sub" style="text-align:center" id="drill-turn"></p>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="coach">
+          <div class="avatar">♞</div>
+          <div class="bubble"><div class="nm">RILEX</div><div id="drill-hint"></div></div>
+        </div>
+        <div id="drill-fb"></div>
+        <div class="btn-row">
+          <button class="btn ghost" id="btn-drill-show">💡 ورّيني الحل</button>
+          <button class="btn ghost" id="btn-drill-next">🔄 تمرين تاني</button>
+          <button class="btn em" id="btn-drill-done">♟️ للمباراة</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="section-title bl"><span class="ico">📊</span> تمارينك</h2>
+        <div class="grid g2">
+          <div class="stat e"><div class="v" id="dr-s">0</div><div class="l">صحّ</div></div>
+          <div class="stat r"><div class="v" id="dr-t">0</div><div class="l">محاولات</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= المباراة ================= -->
+<section class="screen hide" id="scr-game">
+  <div class="layout">
+    <div class="card">
+      <h2 class="section-title"><span class="ico">♟️</span> <span id="game-head">مباراة الاختبار</span></h2>
+      <div class="board-box">
+        <div class="clocks">
+          <div class="clock" id="clk-opp"><div class="n" id="clk-opp-n">RILEX</div><div class="t">10:00</div></div>
+          <div class="clock" id="clk-me"><div class="n" id="clk-me-n">إنت</div><div class="t">10:00</div></div>
+        </div>
+        <div class="board-outer"><div class="board" id="game-board"></div></div>
+        <div style="width:min(86vw,520px)">
+          <div class="evalbar"><i id="ev-fill" style="width:50%"></i><span id="ev-txt">0.0</span></div>
+        </div>
+        <div class="flipwrap">
+          <button class="btn ghost sm" id="btn-flip">🔄 قلب الرقعة</button>
+          <button class="btn ghost sm" id="btn-hint">💡 تلميح</button>
+          <button class="btn ghost sm" id="btn-undo">↩️ تراجع</button>
+          <button class="btn rd sm" id="btn-resign">🏳️ استسلام</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2 class="section-title em"><span class="ico">🎙️</span> تعليق RILEX المباشر</h2>
+        <div class="feed" id="game-feed"></div>
+      </div>
+      <div class="card">
+        <h2 class="section-title bl"><span class="ico">📋</span> النقلات</h2>
+        <div class="moves" id="move-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= التقرير ================= -->
+<section class="screen hide" id="scr-report">
+  <div class="result-banner" id="rp-banner"></div>
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2 class="section-title em"><span class="ico">✅</span> شو عملت منيح</h2>
+        <ul class="rules" id="rp-good"></ul>
+      </div>
+      <div class="card">
+        <h2 class="section-title rd"><span class="ico">⚠️</span> شو غلطت</h2>
+        <ul class="rules" id="rp-bad"></ul>
+      </div>
+      <div class="card">
+        <h2 class="section-title"><span class="ico">📋</span> كل نقلاتك بالتفصيل</h2>
+        <div style="overflow:auto"><table class="tbl" id="rp-table"></table></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2 class="section-title bl"><span class="ico">🎯</span> الدقّة</h2>
+        <div class="ring"><canvas id="acc-ring" width="236" height="236"></canvas>
+          <div class="in"><b id="acc-v">—</b><s>Accuracy</s></div></div>
+        <div class="grid g3" style="margin-top:14px">
+          <div class="stat e"><div class="v" id="rp-best">0</div><div class="l">أفضل نقلة</div></div>
+          <div class="stat"><div class="v" id="rp-mist">0</div><div class="l">Mistakes</div></div>
+          <div class="stat r"><div class="v" id="rp-blun">0</div><div class="l">Blunders</div></div>
+        </div>
+      </div>
+      <div class="card" id="rp-worst-card">
+        <h2 class="section-title rd"><span class="ico">🔎</span> أسوأ نقلة</h2>
+        <div class="board-box">
+          <div class="board-outer"><div class="board mini" id="rp-board"></div></div>
+          <p class="sub" style="text-align:center" id="rp-worst-txt"></p>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="section-title pp"><span class="ico">➡️</span> الدرس الجاي</h2>
+        <ul class="rules" id="rp-next"></ul>
+        <div class="btn-row">
+          <button class="btn em" id="btn-next-session">🚀 جلسة جديدة</button>
+          <button class="btn ghost" data-nav="home">الرئيسية</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= الإعدادات ================= -->
+<section class="screen hide" id="scr-settings">
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2 class="section-title"><span class="ico">⚙️</span> إعدادات اللعب</h2>
+        <label class="fl" for="se-elo">تعديل الإيلو يدوياً</label>
+        <input class="inp" id="se-elo" type="number" min="400" max="2800" step="25">
+        <p class="sub" style="font-size:12.5px">إذا تعرف مستواك الحقيقي (chess.com / Lichess / FIDE) حطّه هون حتى يضبط RILEX صعوبة المحرك من أول مباراة.</p>
+        <label class="fl" for="se-mode">مستوى المحرك</label>
+        <select class="inp" id="se-mode">
+          <option value="auto">تلقائي — RILEX يختار حسب إيلوك (موصى به)</option>
+          <option value="manual">يدوي — إنت تختار</option>
+        </select>
+        <div id="se-lvl-wrap" class="hide">
+          <label class="fl" for="se-lvl">المستوى</label>
+          <select class="inp" id="se-lvl"></select>
+        </div>
+        <label class="fl" for="se-clock">وقت المباراة (دقائق لكل لاعب)</label>
+        <select class="inp" id="se-clock">
+          <option value="0">بلا ساعة</option><option value="3">3 دقائق</option>
+          <option value="5">5 دقائق</option><option value="10">10 دقائق</option>
+          <option value="15">15 دقيقة</option><option value="30">30 دقيقة</option>
+        </select>
+        <label class="fl" for="se-color">لونك بمباراة الاختبار</label>
+        <select class="inp" id="se-color">
+          <option value="w">أبيض</option><option value="b">أسود</option><option value="r">عشوائي</option>
+        </select>
+        <div class="btn-row"><button class="btn em" id="btn-save-set">💾 حفظ الإعدادات</button></div>
+        <div id="set-msg"></div>
+      </div>
+      <div class="card">
+        <h2 class="section-title rd"><span class="ico">🗑️</span> منطقة خطر</h2>
+        <p class="sub">حذف الحساب بيمسح كل بياناتك من هذا الجهاز نهائياً (الإيلو، السجل، نقاط الضعف). إنصحك تعمل تصدير أولاً.</p>
+        <div class="btn-row">
+          <button class="btn ghost" id="btn-reset-stats">♻️ تصفير الإحصائيات فقط</button>
+          <button class="btn rd" id="btn-del-acct">🗑️ حذف الحساب</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2 class="section-title em"><span class="ico">🔐</span> نقل الحساب لجهاز تاني</h2>
+        <p class="sub">
+          <b>التصدير:</b> بياخد كل بياناتك ويشفّرها بـ AES-GCM 256 بمفتاح مشتقّ من كلمة سر تشفير تختارها إنت (PBKDF2-SHA256، 150,000 تكرار + salt عشوائي). الملف ينزّل باسم
+          <span class="kbd">rilex-backup-&lt;user&gt;.rilex</span>.<br>
+          <b>مهم:</b> كلمة سر التشفير ما تُخزَّن بأي مطرح. إذا نسيتها ما في طريقة تفتح الملف.
+        </p>
+        <div class="btn-row">
+          <button class="btn" id="btn-export">📤 تصدير حسابي</button>
+          <button class="btn bl" id="btn-import2">📥 استيراد حساب</button>
+        </div>
+        <div id="io-msg"></div>
+      </div>
+      <div class="card">
+        <h2 class="section-title bl"><span class="ico">👥</span> الحسابات</h2>
+        <div id="set-accts"></div>
+      </div>
+      <div class="card">
+        <h2 class="section-title pp"><span class="ico">ℹ️</span> عن التطبيق</h2>
+        <p class="sub" style="font-size:13px">
+          <b>RILEX CHESS FU</b> — ملف HTML واحد، بلا سيرفر وبلا API.<br>
+          • محرك شطرنج JS: Negamax + Alpha-Beta + Quiescence + Piece-Square Tables + MVV-LVA + كتاب افتتاحيات.<br>
+          • الكوتش: تحليل centipawn-loss لكل نقلة، كشف نقاط الضعف، وتوليد الدرس والتمرين حسب ضعفك.<br>
+          • الإيلو: معادلة Elo قياسية مع K-factor متغيّر (60 / 40 / 24).<br>
+          • البيانات بـ localStorage على جهازك فقط.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">RILEX CHESS FU — كل شي محلي بمتصفحك · <span id="foot-ver"></span></div>
+</main>
+
+<div id="toasts"></div>
+<div id="overlay" class="hide"><div id="modal"></div></div>
+<div id="thinking" class="hide"><span class="spin"></span><span id="think-txt">RILEX عم يفكّر…</span></div>
+
+<script>
+/* ==========================================================================
+   RILEX CHESS — CORE
+   محرّك القوانين (board 0x88) — توليد النقلات، الكش، المات، التعادل، SAN
+   ========================================================================== */
+(function (G) {
+  'use strict';
+
+  const PAWN = 1, KNIGHT = 2, BISHOP = 3, ROOK = 4, QUEEN = 5, KING = 6;
+  const CAS_WK = 1, CAS_WQ = 2, CAS_BK = 4, CAS_BQ = 8;
+
+  const KND = [33, 31, 18, 14, -33, -31, -18, -14];
+  const BID = [15, 17, -15, -17];
+  const ROD = [16, -16, 1, -1];
+  const KID = [16, -16, 1, -1, 15, 17, -15, -17];
+
+  const LET = ['', '', 'N', 'B', 'R', 'Q', 'K'];       // حرف القطعة بالـ SAN
+  const FEN_CH = { p: 1, n: 2, b: 3, r: 4, q: 5, k: 6 };
+  const CH_FEN = ['', 'p', 'n', 'b', 'r', 'q', 'k'];
+
+  const ob = (sq) => (sq & 0x88) === 0;                 // هل المربع داخل الرقعة
+  const sqName = (sq) => 'abcdefgh'[sq & 15] + (1 + (sq >> 4));
+  const nameSq = (s) => (s.charCodeAt(0) - 97) + ((s.charCodeAt(1) - 49) << 4);
+
+  const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+  function emptyPos() {
+    return { b: new Int8Array(128), turn: 1, cas: 0, ep: -1, half: 0, full: 1, kw: -1, kb: -1 };
+  }
+
+  function clonePos(p) {
+    return { b: Int8Array.from(p.b), turn: p.turn, cas: p.cas, ep: p.ep, half: p.half, full: p.full, kw: p.kw, kb: p.kb };
+  }
+
+  function fromFEN(fen) {
+    const p = emptyPos();
+    const parts = String(fen).trim().split(/\s+/);
+    const rows = parts[0].split('/');
+    if (rows.length !== 8) throw new Error('FEN غير صالح');
+    for (let r = 0; r < 8; r++) {
+      const row = rows[7 - r];
+      let f = 0;
+      for (let i = 0; i < row.length; i++) {
+        const ch = row[i];
+        if (ch >= '1' && ch <= '8') { f += (ch.charCodeAt(0) - 48); continue; }
+        const low = ch.toLowerCase();
+        const ty = FEN_CH[low];
+        if (!ty) throw new Error('FEN غير صالح: ' + ch);
+        const val = (ch === low) ? -ty : ty;
+        const sq = (r << 4) | f;
+        p.b[sq] = val;
+        if (ty === KING) { if (val > 0) p.kw = sq; else p.kb = sq; }
+        f++;
+      }
+    }
+    p.turn = (parts[1] === 'b') ? -1 : 1;
+    const c = parts[2] || '-';
+    if (c.indexOf('K') >= 0) p.cas |= CAS_WK;
+    if (c.indexOf('Q') >= 0) p.cas |= CAS_WQ;
+    if (c.indexOf('k') >= 0) p.cas |= CAS_BK;
+    if (c.indexOf('q') >= 0) p.cas |= CAS_BQ;
+    p.ep = (parts[3] && parts[3] !== '-') ? nameSq(parts[3]) : -1;
+    p.half = parts[4] ? (parseInt(parts[4], 10) || 0) : 0;
+    p.full = parts[5] ? (parseInt(parts[5], 10) || 1) : 1;
+    return p;
+  }
+
+  function toFEN(p) {
+    let s = '';
+    for (let r = 7; r >= 0; r--) {
+      let empt = 0;
+      for (let f = 0; f < 8; f++) {
+        const v = p.b[(r << 4) | f];
+        if (v === 0) { empt++; continue; }
+        if (empt) { s += empt; empt = 0; }
+        const ch = CH_FEN[Math.abs(v)];
+        s += (v > 0) ? ch.toUpperCase() : ch;
+      }
+      if (empt) s += empt;
+      if (r > 0) s += '/';
+    }
+    let c = '';
+    if (p.cas & CAS_WK) c += 'K';
+    if (p.cas & CAS_WQ) c += 'Q';
+    if (p.cas & CAS_BK) c += 'k';
+    if (p.cas & CAS_BQ) c += 'q';
+    return s + ' ' + (p.turn === 1 ? 'w' : 'b') + ' ' + (c || '-') + ' ' +
+      (p.ep >= 0 ? sqName(p.ep) : '-') + ' ' + p.half + ' ' + p.full;
+  }
+
+  /* مفتاح التكرار (بدون عدّادات) لكشف التعادل بالتكرار الثلاثي */
+  function repKey(p) {
+    const f = toFEN(p).split(' ');
+    return f[0] + ' ' + f[1] + ' ' + f[2] + ' ' + f[3];
+  }
+
+  /* ---------------- هل المربع مهدَّد ---------------- */
+  function isAttacked(p, sq, by) {
+    const b = p.b;
+    // بيادق
+    if (by === 1) {
+      if (ob(sq - 15) && b[sq - 15] === PAWN) return true;
+      if (ob(sq - 17) && b[sq - 17] === PAWN) return true;
+    } else {
+      if (ob(sq + 15) && b[sq + 15] === -PAWN) return true;
+      if (ob(sq + 17) && b[sq + 17] === -PAWN) return true;
+    }
+    // أحصنة
+    for (let i = 0; i < 8; i++) {
+      const t = sq + KND[i];
+      if (ob(t) && b[t] === by * KNIGHT) return true;
+    }
+    // ملك
+    for (let i = 0; i < 8; i++) {
+      const t = sq + KID[i];
+      if (ob(t) && b[t] === by * KING) return true;
+    }
+    // أفيال + ملكة (أقطار)
+    for (let i = 0; i < 4; i++) {
+      let t = sq + BID[i];
+      while (ob(t)) {
+        const v = b[t];
+        if (v !== 0) {
+          if (v === by * BISHOP || v === by * QUEEN) return true;
+          break;
+        }
+        t += BID[i];
+      }
+    }
+    // رخّ + ملكة (مستقيم)
+    for (let i = 0; i < 4; i++) {
+      let t = sq + ROD[i];
+      while (ob(t)) {
+        const v = b[t];
+        if (v !== 0) {
+          if (v === by * ROOK || v === by * QUEEN) return true;
+          break;
+        }
+        t += ROD[i];
+      }
+    }
+    return false;
+  }
+
+  const kingSq = (p, col) => (col === 1 ? p.kw : p.kb);
+  const inCheck = (p, col) => isAttacked(p, kingSq(p, col), -col);
+
+  function mk(from, to, pc, cap, promo, flag) {
+    return { from: from, to: to, pc: pc, cap: cap || 0, promo: promo || 0, flag: flag || '' };
+  }
+
+  /* ---------------- توليد النقلات (pseudo-legal) ---------------- */
+  function genPseudo(p, capsOnly) {
+    const b = p.b, t = p.turn, out = [];
+    const dir = (t === 1) ? 16 : -16;
+    const startRank = (t === 1) ? 1 : 6;
+    const promoRank = (t === 1) ? 6 : 1;
+
+    for (let r = 0; r < 8; r++) {
+      for (let f = 0; f < 8; f++) {
+        const sq = (r << 4) | f;
+        const v = b[sq];
+        if (v === 0 || v * t < 0) continue;
+        const ty = v * t;
+
+        if (ty === PAWN) {
+          const one = sq + dir;
+          if (ob(one) && b[one] === 0) {
+            if (r === promoRank) {
+              out.push(mk(sq, one, v, 0, QUEEN * t, 'p'));
+              if (!capsOnly) {
+                out.push(mk(sq, one, v, 0, ROOK * t, 'p'));
+                out.push(mk(sq, one, v, 0, BISHOP * t, 'p'));
+                out.push(mk(sq, one, v, 0, KNIGHT * t, 'p'));
+              }
+            } else if (!capsOnly) {
+              out.push(mk(sq, one, v, 0, 0, ''));
+              const two = sq + dir * 2;
+              if (r === startRank && b[two] === 0) out.push(mk(sq, two, v, 0, 0, 'd'));
+            }
+          }
+          for (let k = -1; k <= 1; k += 2) {
+            const tgt = sq + dir + k;
+            if (!ob(tgt)) continue;
+            const cv = b[tgt];
+            if (cv !== 0 && cv * t < 0) {
+              if (r === promoRank) {
+                out.push(mk(sq, tgt, v, cv, QUEEN * t, 'p'));
+                if (!capsOnly) {
+                  out.push(mk(sq, tgt, v, cv, ROOK * t, 'p'));
+                  out.push(mk(sq, tgt, v, cv, BISHOP * t, 'p'));
+                  out.push(mk(sq, tgt, v, cv, KNIGHT * t, 'p'));
+                }
+              } else {
+                out.push(mk(sq, tgt, v, cv, 0, ''));
+              }
+            } else if (cv === 0 && tgt === p.ep) {
+              out.push(mk(sq, tgt, v, -PAWN * t, 0, 'e'));
+            }
+          }
+          continue;
+        }
+
+        if (ty === KNIGHT || ty === KING) {
+          const dd = (ty === KNIGHT) ? KND : KID;
+          for (let i = 0; i < 8; i++) {
+            const tgt = sq + dd[i];
+            if (!ob(tgt)) continue;
+            const cv = b[tgt];
+            if (cv === 0) { if (!capsOnly) out.push(mk(sq, tgt, v, 0, 0, '')); }
+            else if (cv * t < 0) out.push(mk(sq, tgt, v, cv, 0, ''));
+          }
+          if (ty === KING && !capsOnly) {
+            // الكاستلينغ
+            if (t === 1 && sq === 4) {
+              if ((p.cas & CAS_WK) && b[5] === 0 && b[6] === 0 && b[7] === ROOK &&
+                !isAttacked(p, 4, -1) && !isAttacked(p, 5, -1) && !isAttacked(p, 6, -1))
+                out.push(mk(4, 6, v, 0, 0, 'k'));
+              if ((p.cas & CAS_WQ) && b[3] === 0 && b[2] === 0 && b[1] === 0 && b[0] === ROOK &&
+                !isAttacked(p, 4, -1) && !isAttacked(p, 3, -1) && !isAttacked(p, 2, -1))
+                out.push(mk(4, 2, v, 0, 0, 'q'));
+            } else if (t === -1 && sq === 116) {
+              if ((p.cas & CAS_BK) && b[117] === 0 && b[118] === 0 && b[119] === -ROOK &&
+                !isAttacked(p, 116, 1) && !isAttacked(p, 117, 1) && !isAttacked(p, 118, 1))
+                out.push(mk(116, 118, v, 0, 0, 'k'));
+              if ((p.cas & CAS_BQ) && b[115] === 0 && b[114] === 0 && b[113] === 0 && b[112] === -ROOK &&
+                !isAttacked(p, 116, 1) && !isAttacked(p, 115, 1) && !isAttacked(p, 114, 1))
+                out.push(mk(116, 114, v, 0, 0, 'q'));
+            }
+          }
+          continue;
+        }
+
+        // القطع المنزلقة: فيل / رخ / ملكة
+        const dd = (ty === BISHOP) ? BID : (ty === ROOK) ? ROD : KID;
+        const n = (ty === QUEEN) ? 8 : 4;
+        for (let i = 0; i < n; i++) {
+          let tgt = sq + dd[i];
+          while (ob(tgt)) {
+            const cv = b[tgt];
+            if (cv === 0) { if (!capsOnly) out.push(mk(sq, tgt, v, 0, 0, '')); }
+            else {
+              if (cv * t < 0) out.push(mk(sq, tgt, v, cv, 0, ''));
+              break;
+            }
+            tgt += dd[i];
+          }
+        }
+      }
+    }
+    return out;
+  }
+
+  /* ---------------- تنفيذ / إرجاع النقلة ---------------- */
+  const CAS_MASK = (function () {
+    const m = new Int8Array(128).fill(15);
+    m[0] = 15 & ~CAS_WQ; m[7] = 15 & ~CAS_WK; m[4] = 15 & ~(CAS_WK | CAS_WQ);
+    m[112] = 15 & ~CAS_BQ; m[119] = 15 & ~CAS_BK; m[116] = 15 & ~(CAS_BK | CAS_BQ);
+    return m;
+  })();
+
+  function makeMove(p, m) {
+    const b = p.b;
+    const undo = { cas: p.cas, ep: p.ep, half: p.half, full: p.full, kw: p.kw, kb: p.kb, capSq: -1, capPc: 0 };
+    const t = p.turn;
+
+    b[m.from] = 0;
+
+    if (m.flag === 'e') {                       // آن باسان
+      const capSq = m.to - ((t === 1) ? 16 : -16);
+      undo.capSq = capSq; undo.capPc = b[capSq];
+      b[capSq] = 0;
+      b[m.to] = m.pc;
+    } else {
+      if (m.cap !== 0) { undo.capSq = m.to; undo.capPc = b[m.to]; }
+      b[m.to] = m.promo !== 0 ? m.promo : m.pc;
+    }
+
+    if (m.flag === 'k') {                        // كاستلينغ قصير
+      if (t === 1) { b[7] = 0; b[5] = ROOK; } else { b[119] = 0; b[117] = -ROOK; }
+    } else if (m.flag === 'q') {                 // كاستلينغ طويل
+      if (t === 1) { b[0] = 0; b[3] = ROOK; } else { b[112] = 0; b[115] = -ROOK; }
+    }
+
+    if (Math.abs(m.pc) === KING) { if (t === 1) p.kw = m.to; else p.kb = m.to; }
+
+    p.cas &= CAS_MASK[m.from];
+    p.cas &= CAS_MASK[m.to];
+    p.ep = (m.flag === 'd') ? (m.from + ((t === 1) ? 16 : -16)) : -1;
+    p.half = (Math.abs(m.pc) === PAWN || m.cap !== 0) ? 0 : p.half + 1;
+    if (t === -1) p.full++;
+    p.turn = -t;
+    return undo;
+  }
+
+  function unmakeMove(p, m, undo) {
+    const b = p.b;
+    p.turn = -p.turn;
+    const t = p.turn;
+    p.cas = undo.cas; p.ep = undo.ep; p.half = undo.half; p.full = undo.full;
+    p.kw = undo.kw; p.kb = undo.kb;
+
+    b[m.from] = m.pc;
+    b[m.to] = 0;
+    if (undo.capSq >= 0) b[undo.capSq] = undo.capPc;
+
+    if (m.flag === 'k') {
+      if (t === 1) { b[5] = 0; b[7] = ROOK; } else { b[117] = 0; b[119] = -ROOK; }
+    } else if (m.flag === 'q') {
+      if (t === 1) { b[3] = 0; b[0] = ROOK; } else { b[115] = 0; b[112] = -ROOK; }
+    }
+  }
+
+  /* ---------------- النقلات القانونية ---------------- */
+  function legalMoves(p, capsOnly) {
+    const ps = genPseudo(p, capsOnly), out = [];
+    const me = p.turn;
+    for (let i = 0; i < ps.length; i++) {
+      const m = ps[i];
+      const u = makeMove(p, m);
+      if (!isAttacked(p, kingSq(p, me), -me)) out.push(m);
+      unmakeMove(p, m, u);
+    }
+    return out;
+  }
+
+  function isLegal(p, m) {
+    const me = p.turn;
+    const u = makeMove(p, m);
+    const ok = !isAttacked(p, kingSq(p, me), -me);
+    unmakeMove(p, m, u);
+    return ok;
+  }
+
+  /* ---------------- مواد غير كافية ---------------- */
+  function insufficient(p) {
+    let wN = 0, wB = 0, bN = 0, bB = 0;
+    for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) {
+      const v = p.b[(r << 4) | f];
+      if (v === 0) continue;
+      const a = Math.abs(v);
+      if (a === PAWN || a === ROOK || a === QUEEN) return false;
+      if (a === KNIGHT) { if (v > 0) wN++; else bN++; }
+      if (a === BISHOP) { if (v > 0) wB++; else bB++; }
+    }
+    const w = wN + wB, b = bN + bB;
+    if (w <= 1 && b <= 1) return true;            // K, K+minor
+    if ((w === 2 && wN === 2 && b === 0) || (b === 2 && bN === 2 && w === 0)) return true; // KNN vs K
+    return false;
+  }
+
+  /* ---------------- حالة المباراة ---------------- */
+  // repCounts: كائن {repKey: عدد} يُمرَّر من طبقة اللعبة
+  function status(p, repCounts) {
+    const ms = legalMoves(p, false);
+    if (ms.length === 0) {
+      if (inCheck(p, p.turn)) return { over: true, result: (p.turn === 1 ? '0-1' : '1-0'), reason: 'checkmate' };
+      return { over: true, result: '1/2-1/2', reason: 'stalemate' };
+    }
+    if (p.half >= 100) return { over: true, result: '1/2-1/2', reason: 'fifty' };
+    if (insufficient(p)) return { over: true, result: '1/2-1/2', reason: 'material' };
+    if (repCounts && repCounts[repKey(p)] >= 3) return { over: true, result: '1/2-1/2', reason: 'repetition' };
+    return { over: false, moves: ms, check: inCheck(p, p.turn) };
+  }
+
+  /* ---------------- SAN ---------------- */
+  function toSAN(p, m) {
+    let san;
+    if (m.flag === 'k') san = 'O-O';
+    else if (m.flag === 'q') san = 'O-O-O';
+    else {
+      const ty = Math.abs(m.pc);
+      if (ty === PAWN) {
+        san = (m.cap !== 0) ? ('abcdefgh'[m.from & 15] + 'x' + sqName(m.to)) : sqName(m.to);
+        if (m.promo) san += '=' + LET[Math.abs(m.promo)];
+      } else {
+        // التمييز (disambiguation)
+        const all = legalMoves(p, false);
+        const same = all.filter(function (x) {
+          return x.pc === m.pc && x.to === m.to && x.from !== m.from;
+        });
+        let dis = '';
+        if (same.length) {
+          const sameFile = same.some(function (x) { return (x.from & 15) === (m.from & 15); });
+          const sameRank = same.some(function (x) { return (x.from >> 4) === (m.from >> 4); });
+          if (!sameFile) dis = 'abcdefgh'[m.from & 15];
+          else if (!sameRank) dis = String(1 + (m.from >> 4));
+          else dis = sqName(m.from);
+        }
+        san = LET[ty] + dis + (m.cap !== 0 ? 'x' : '') + sqName(m.to);
+      }
+    }
+    const u = makeMove(p, m);
+    const opp = p.turn;
+    const ms = legalMoves(p, false);
+    if (isAttacked(p, kingSq(p, opp), -opp)) san += (ms.length === 0 ? '#' : '+');
+    unmakeMove(p, m, u);
+    return san;
+  }
+
+  const uci = (m) => sqName(m.from) + sqName(m.to) + (m.promo ? CH_FEN[Math.abs(m.promo)] : '');
+
+  function findByUci(p, s) {
+    const ms = legalMoves(p, false);
+    for (let i = 0; i < ms.length; i++) if (uci(ms[i]) === s) return ms[i];
+    return null;
+  }
+
+  function perft(p, d) {
+    if (d === 0) return 1;
+    const ms = genPseudo(p, false);
+    let n = 0;
+    const me = p.turn;
+    for (let i = 0; i < ms.length; i++) {
+      const u = makeMove(p, ms[i]);
+      if (!isAttacked(p, kingSq(p, me), -me)) n += (d === 1) ? 1 : perft(p, d - 1);
+      unmakeMove(p, ms[i], u);
+    }
+    return n;
+  }
+
+  G.RChess = {
+    PAWN: PAWN, KNIGHT: KNIGHT, BISHOP: BISHOP, ROOK: ROOK, QUEEN: QUEEN, KING: KING,
+    START_FEN: START_FEN, ob: ob, sqName: sqName, nameSq: nameSq,
+    emptyPos: emptyPos, clonePos: clonePos, fromFEN: fromFEN, toFEN: toFEN, repKey: repKey,
+    isAttacked: isAttacked, inCheck: inCheck, kingSq: kingSq,
+    genPseudo: genPseudo, legalMoves: legalMoves, isLegal: isLegal,
+    makeMove: makeMove, unmakeMove: unmakeMove,
+    status: status, insufficient: insufficient, toSAN: toSAN, uci: uci, findByUci: findByUci,
+    perft: perft
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ==========================================================================
+   RILEX CHESS — ENGINE
+   تقييم الوضعية + بحث Negamax مع Alpha-Beta و Quiescence و MVV-LVA
+   ========================================================================== */
+(function (G) {
+  'use strict';
+  const C = G.RChess;
+  const PAWN = 1, KNIGHT = 2, BISHOP = 3, ROOK = 4, QUEEN = 5, KING = 6;
+  const VAL = [0, 100, 320, 330, 500, 900, 0];
+  const MATE = 30000, INF = 1e9;
+
+  /* ------- جداول القطع/المربعات (Piece-Square Tables) ------- */
+  /* الترتيب بصري: index 0 = a8 ... 63 = h1 */
+  const PST = {};
+  PST[PAWN] = [
+    0, 0, 0, 0, 0, 0, 0, 0,
+    50, 50, 50, 50, 50, 50, 50, 50,
+    10, 10, 20, 30, 30, 20, 10, 10,
+    5, 5, 10, 25, 25, 10, 5, 5,
+    0, 0, 0, 20, 20, 0, 0, 0,
+    5, -5, -10, 0, 0, -10, -5, 5,
+    5, 10, 10, -20, -20, 10, 10, 5,
+    0, 0, 0, 0, 0, 0, 0, 0];
+  PST[KNIGHT] = [
+    -50, -40, -30, -30, -30, -30, -40, -50,
+    -40, -20, 0, 0, 0, 0, -20, -40,
+    -30, 0, 10, 15, 15, 10, 0, -30,
+    -30, 5, 15, 20, 20, 15, 5, -30,
+    -30, 0, 15, 20, 20, 15, 0, -30,
+    -30, 5, 10, 15, 15, 10, 5, -30,
+    -40, -20, 0, 5, 5, 0, -20, -40,
+    -50, -40, -30, -30, -30, -30, -40, -50];
+  PST[BISHOP] = [
+    -20, -10, -10, -10, -10, -10, -10, -20,
+    -10, 0, 0, 0, 0, 0, 0, -10,
+    -10, 0, 5, 10, 10, 5, 0, -10,
+    -10, 5, 5, 10, 10, 5, 5, -10,
+    -10, 0, 10, 10, 10, 10, 0, -10,
+    -10, 10, 10, 10, 10, 10, 10, -10,
+    -10, 5, 0, 0, 0, 0, 5, -10,
+    -20, -10, -10, -10, -10, -10, -10, -20];
+  PST[ROOK] = [
+    0, 0, 0, 0, 0, 0, 0, 0,
+    5, 10, 10, 10, 10, 10, 10, 5,
+    -5, 0, 0, 0, 0, 0, 0, -5,
+    -5, 0, 0, 0, 0, 0, 0, -5,
+    -5, 0, 0, 0, 0, 0, 0, -5,
+    -5, 0, 0, 0, 0, 0, 0, -5,
+    -5, 0, 0, 0, 0, 0, 0, -5,
+    0, 0, 0, 5, 5, 0, 0, 0];
+  PST[QUEEN] = [
+    -20, -10, -10, -5, -5, -10, -10, -20,
+    -10, 0, 0, 0, 0, 0, 0, -10,
+    -10, 0, 5, 5, 5, 5, 0, -10,
+    -5, 0, 5, 5, 5, 5, 0, -5,
+    0, 0, 5, 5, 5, 5, 0, -5,
+    -10, 5, 5, 5, 5, 5, 0, -10,
+    -10, 0, 5, 0, 0, 0, 0, -10,
+    -20, -10, -10, -5, -5, -10, -10, -20];
+  const KING_MID = [
+    -30, -40, -40, -50, -50, -40, -40, -30,
+    -30, -40, -40, -50, -50, -40, -40, -30,
+    -30, -40, -40, -50, -50, -40, -40, -30,
+    -30, -40, -40, -50, -50, -40, -40, -30,
+    -20, -30, -30, -40, -40, -30, -30, -20,
+    -10, -20, -20, -20, -20, -20, -20, -10,
+    20, 20, 0, 0, 0, 0, 20, 20,
+    20, 30, 10, 0, 0, 10, 30, 20];
+  const KING_END = [
+    -50, -40, -30, -20, -20, -30, -40, -50,
+    -30, -20, -10, 0, 0, -10, -20, -30,
+    -30, -10, 20, 30, 30, 20, -10, -30,
+    -30, -10, 30, 40, 40, 30, -10, -30,
+    -30, -10, 30, 40, 40, 30, -10, -30,
+    -30, -10, 20, 30, 30, 20, -10, -30,
+    -30, -30, 0, 0, 0, 0, -30, -30,
+    -50, -30, -30, -30, -30, -30, -30, -50];
+  const PASSED = [0, 5, 12, 25, 45, 75, 120, 0];
+
+  const visW = (sq) => (7 - (sq >> 4)) * 8 + (sq & 15);
+  const visB = (sq) => (sq >> 4) * 8 + (sq & 15);
+
+  /* ------------------- التقييم (من منظور الأبيض) ------------------- */
+  function evaluate(p) {
+    const b = p.b;
+    let mat = 0, pstOther = 0, pstKM = 0, pstKE = 0, npm = 0;
+    let wB = 0, bB = 0;
+    const wP = [0, 0, 0, 0, 0, 0, 0, 0], bP = [0, 0, 0, 0, 0, 0, 0, 0];
+    const wPr = [[], [], [], [], [], [], [], []], bPr = [[], [], [], [], [], [], [], []];
+    const wRooks = [], bRooks = [];
+
+    for (let r = 0; r < 8; r++) {
+      for (let f = 0; f < 8; f++) {
+        const sq = (r << 4) | f, v = b[sq];
+        if (v === 0) continue;
+        const ty = Math.abs(v), white = v > 0;
+        mat += white ? VAL[ty] : -VAL[ty];
+        if (ty !== PAWN && ty !== KING) npm += VAL[ty];
+        const vi = white ? visW(sq) : visB(sq);
+        if (ty === KING) {
+          pstKM += white ? KING_MID[vi] : -KING_MID[vi];
+          pstKE += white ? KING_END[vi] : -KING_END[vi];
+        } else {
+          pstOther += white ? PST[ty][vi] : -PST[ty][vi];
+        }
+        if (ty === PAWN) { if (white) { wP[f]++; wPr[f].push(r); } else { bP[f]++; bPr[f].push(r); } }
+        if (ty === BISHOP) { if (white) wB++; else bB++; }
+        if (ty === ROOK) { (white ? wRooks : bRooks).push(sq); }
+      }
+    }
+
+    /* معامل المرحلة: 1 = وسط المباراة، 0 = نهاية */
+    const MAXNPM = 2 * (2 * VAL[KNIGHT] + 2 * VAL[BISHOP] + 2 * VAL[ROOK] + VAL[QUEEN]);
+    let ph = npm / MAXNPM; if (ph > 1) ph = 1; if (ph < 0) ph = 0;
+
+    /* جداول القطع كاملة دائماً؛ جدول الملك فقط يتدرّج بين الوسط والنهاية */
+    let s = mat + pstOther + pstKM * ph + pstKE * (1 - ph);
+
+    /* زوج الأفيال */
+    if (wB >= 2) s += 30;
+    if (bB >= 2) s -= 30;
+
+    /* بنية البيادق */
+    for (let f = 0; f < 8; f++) {
+      if (wP[f] > 1) s -= 12 * (wP[f] - 1);
+      if (bP[f] > 1) s += 12 * (bP[f] - 1);
+      const wNb = (f > 0 ? wP[f - 1] : 0) + (f < 7 ? wP[f + 1] : 0);
+      const bNb = (f > 0 ? bP[f - 1] : 0) + (f < 7 ? bP[f + 1] : 0);
+      if (wP[f] > 0 && wNb === 0) s -= 16;
+      if (bP[f] > 0 && bNb === 0) s += 16;
+      /* البيادق الحرّة (Passed pawns) */
+      for (let i = 0; i < wPr[f].length; i++) {
+        const r = wPr[f][i];
+        let blocked = false;
+        for (let g = Math.max(0, f - 1); g <= Math.min(7, f + 1); g++)
+          for (let j = 0; j < bPr[g].length; j++) if (bPr[g][j] > r) blocked = true;
+        if (!blocked) s += PASSED[r] * (1 + (1 - ph));
+      }
+      for (let i = 0; i < bPr[f].length; i++) {
+        const r = bPr[f][i];
+        let blocked = false;
+        for (let g = Math.max(0, f - 1); g <= Math.min(7, f + 1); g++)
+          for (let j = 0; j < wPr[g].length; j++) if (wPr[g][j] < r) blocked = true;
+        if (!blocked) s -= PASSED[7 - r] * (1 + (1 - ph));
+      }
+    }
+
+    /* الرخّ على ملف مفتوح / نصف مفتوح + الصف السابع */
+    for (let i = 0; i < wRooks.length; i++) {
+      const f = wRooks[i] & 15;
+      if (wP[f] === 0) s += (bP[f] === 0) ? 20 : 10;
+      if ((wRooks[i] >> 4) === 6) s += 20;
+    }
+    for (let i = 0; i < bRooks.length; i++) {
+      const f = bRooks[i] & 15;
+      if (bP[f] === 0) s -= (wP[f] === 0) ? 20 : 10;
+      if ((bRooks[i] >> 4) === 1) s -= 20;
+    }
+
+    /* حماية الملك (Pawn shield) — مهمّة بوسط المباراة فقط */
+    if (ph > 0.4) {
+      s += shield(p, 1) * ph;
+      s -= shield(p, -1) * ph;
+    }
+    return Math.round(s);
+  }
+
+  function shield(p, col) {
+    const ks = C.kingSq(p, col);
+    if (ks < 0) return 0;
+    const f = ks & 15, r = ks >> 4;
+    /* نحسب الحماية فقط إذا الملك عمل كاستلينغ أو بقي بالبيت */
+    if (col === 1 && r > 1) return 0;
+    if (col === -1 && r < 6) return 0;
+    let sc = 0;
+    for (let d = -1; d <= 1; d++) {
+      const ff = f + d;
+      if (ff < 0 || ff > 7) continue;
+      let found = false;
+      for (let k = 1; k <= 2; k++) {
+        const rr = r + col * k;
+        if (rr < 0 || rr > 7) break;
+        if (p.b[(rr << 4) | ff] === col * PAWN) { found = true; sc += (k === 1 ? 10 : 5); break; }
+      }
+      if (!found) sc -= 14;
+    }
+    /* الملك بالوسط بوسط المباراة = خطر */
+    if (f >= 3 && f <= 4) sc -= 12;
+    return sc;
+  }
+
+  /* ------------------- ترتيب النقلات ------------------- */
+  const killers = [];
+  const history = new Int32Array(128 * 128);
+  function resetTables() { killers.length = 0; history.fill(0); }
+
+  function scoreMove(m, ply, pvMove) {
+    if (pvMove && m.from === pvMove.from && m.to === pvMove.to && m.promo === pvMove.promo) return 1e7;
+    if (m.cap !== 0) {
+      /* MVV-LVA: الضحية الأغلى × 10 ناقص المهاجم */
+      return 1e6 + VAL[Math.abs(m.cap)] * 10 - VAL[Math.abs(m.pc)];
+    }
+    if (m.promo) return 9e5 + VAL[Math.abs(m.promo)];
+    const k = killers[ply];
+    if (k) {
+      if (k[0] && k[0].from === m.from && k[0].to === m.to) return 8e5;
+      if (k[1] && k[1].from === m.from && k[1].to === m.to) return 7e5;
+    }
+    return history[(m.from << 7) | m.to];
+  }
+
+  function sortMoves(ms, ply, pvMove) {
+    for (let i = 0; i < ms.length; i++) ms[i]._s = scoreMove(ms[i], ply, pvMove);
+    ms.sort(function (a, b) { return b._s - a._s; });
+    return ms;
+  }
+
+  function addKiller(m, ply) {
+    if (m.cap !== 0) return;
+    if (!killers[ply]) killers[ply] = [null, null];
+    const k = killers[ply];
+    if (k[0] && k[0].from === m.from && k[0].to === m.to) return;
+    k[1] = k[0]; k[0] = m;
+  }
+
+  /* ------------------- البحث ------------------- */
+  let nodes = 0, stopAt = 0, aborted = false;
+
+  function timeUp() {
+    if ((nodes & 1023) === 0 && Date.now() > stopAt) aborted = true;
+    return aborted;
+  }
+
+  function quiesce(p, alpha, beta, ply) {
+    nodes++;
+    if (timeUp()) return 0;
+    let stand = evaluate(p) * p.turn;
+    if (stand >= beta) return beta;
+    if (stand > alpha) alpha = stand;
+    /* delta pruning */
+    if (stand + 1000 < alpha) return alpha;
+
+    const me = p.turn;
+    let ms = C.genPseudo(p, true);
+    ms = sortMoves(ms, ply, null);
+    for (let i = 0; i < ms.length; i++) {
+      const m = ms[i];
+      if (m.cap !== 0 && stand + VAL[Math.abs(m.cap)] + 200 < alpha) continue;
+      const u = C.makeMove(p, m);
+      if (C.isAttacked(p, C.kingSq(p, me), -me)) { C.unmakeMove(p, m, u); continue; }
+      const sc = -quiesce(p, -beta, -alpha, ply + 1);
+      C.unmakeMove(p, m, u);
+      if (aborted) return 0;
+      if (sc >= beta) return beta;
+      if (sc > alpha) alpha = sc;
+    }
+    return alpha;
+  }
+
+  function negamax(p, depth, alpha, beta, ply) {
+    nodes++;
+    if (timeUp()) return 0;
+    if (p.half >= 100 || C.insufficient(p)) return 0;
+
+    const me = p.turn;
+    const checked = C.isAttacked(p, C.kingSq(p, me), -me);
+    if (checked && ply < 12) depth++;                 /* check extension (محدود) */
+    if (depth <= 0) return quiesce(p, alpha, beta, ply);
+
+    let ms = C.genPseudo(p, false);
+    ms = sortMoves(ms, ply, null);
+    let legal = 0, best = -INF;
+
+    for (let i = 0; i < ms.length; i++) {
+      const m = ms[i];
+      const u = C.makeMove(p, m);
+      if (C.isAttacked(p, C.kingSq(p, me), -me)) { C.unmakeMove(p, m, u); continue; }
+      legal++;
+      const sc = -negamax(p, depth - 1, -beta, -alpha, ply + 1);
+      C.unmakeMove(p, m, u);
+      if (aborted) return 0;
+      if (sc > best) best = sc;
+      if (sc > alpha) {
+        alpha = sc;
+        history[(m.from << 7) | m.to] += depth * depth;
+        if (alpha >= beta) { addKiller(m, ply); return beta; }
+      }
+    }
+    if (legal === 0) return checked ? (-MATE + ply) : 0;
+    return best;
+  }
+
+  /* ترتيب جذري كامل: يرجّع كل النقلات مع تقييمها */
+  function rootScores(p, depth, timeMs, pvMove) {
+    nodes = 0; aborted = false;
+    stopAt = Date.now() + (timeMs || 3000);
+    const me = p.turn;
+    let ms = C.legalMoves(p, false);
+    if (!ms.length) return { list: [], nodes: 0 };
+    ms = sortMoves(ms, 0, pvMove);
+    const res = [];
+    let alpha = -INF;
+    for (let i = 0; i < ms.length; i++) {
+      const m = ms[i];
+      const u = C.makeMove(p, m);
+      const sc = -negamax(p, depth - 1, -INF, INF, 1);   /* نافذة كاملة: تقييم دقيق لكل نقلة */
+      C.unmakeMove(p, m, u);
+      if (aborted && res.length) break;
+      res.push({ move: m, score: sc });
+      if (sc > alpha) alpha = sc;
+    }
+    res.sort(function (a, b) { return b.score - a.score; });
+    return { list: res, nodes: nodes, aborted: aborted };
+  }
+
+  /* بحث سريع (مع alpha-beta بالجذر) لاختيار أفضل نقلة */
+  function searchBest(p, maxDepth, timeMs) {
+    resetTables();
+    nodes = 0; aborted = false;
+    stopAt = Date.now() + (timeMs || 2000);
+    let ms = C.legalMoves(p, false);
+    if (!ms.length) return null;
+    let bestMove = ms[0], bestScore = 0, reached = 0, allScores = [];
+
+    for (let d = 1; d <= maxDepth; d++) {
+      let alpha = -INF, localBest = null, scores = [];
+      ms = sortMoves(ms, 0, bestMove);
+      for (let i = 0; i < ms.length; i++) {
+        const m = ms[i];
+        const u = C.makeMove(p, m);
+        const sc = -negamax(p, d - 1, -INF, -alpha, 1);
+        C.unmakeMove(p, m, u);
+        if (aborted) break;
+        scores.push({ move: m, score: sc });
+        if (sc > alpha) { alpha = sc; localBest = m; }
+      }
+      if (aborted) break;
+      if (localBest) {
+        bestMove = localBest; bestScore = alpha; reached = d;
+        allScores = scores.sort(function (a, b) { return b.score - a.score; });
+      }
+      if (Math.abs(bestScore) > MATE - 100) break;      /* مات أكيد */
+      if (Date.now() > stopAt - 30) break;
+    }
+    return { move: bestMove, score: bestScore, depth: reached, nodes: nodes, scores: allScores };
+  }
+
+  /* ------------------- كتاب الافتتاحيات ------------------- */
+  const BOOK = [
+    'e2e4 e7e5 g1f3 b8c6 f1c4 g8f6 d2d3 f8c5 c2c3 d7d6',
+    'e2e4 e7e5 g1f3 b8c6 f1b5 a7a6 b5a4 g8f6 e1g1 f8e7',
+    'e2e4 e7e5 g1f3 b8c6 d2d4 e5d4 f3d4 g8f6 b1c3',
+    'e2e4 e7e5 b1c3 g8f6 g1f3 b8c6 f1b5',
+    'e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 a7a6',
+    'e2e4 c7c5 g1f3 b8c6 d2d4 c5d4 f3d4 g8f6 b1c3 e7e5',
+    'e2e4 c7c5 b1c3 b8c6 g1f3 e7e6 d2d4',
+    'e2e4 e7e6 d2d4 d7d5 b1c3 g8f6 e4e5 f6d7 f2f4',
+    'e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 c8f5 e4g3',
+    'e2e4 d7d5 e4d5 d8d5 b1c3 d5a5 d2d4 g8f6 g1f3',
+    'e2e4 g8f6 e4e5 f6d5 d2d4 d7d6 g1f3',
+    'e2e4 d7d6 d2d4 g8f6 b1c3 g7g6 g1f3 f8g7',
+    'd2d4 d7d5 c2c4 e7e6 b1c3 g8f6 g1f3 f8e7 c1g5',
+    'd2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 e7e6',
+    'd2d4 g8f6 c2c4 e7e6 g1f3 d7d5 b1c3 f8e7',
+    'd2d4 g8f6 c2c4 g7g6 b1c3 f8g7 e2e4 d7d6 g1f3 e8g8',
+    'd2d4 d7d5 g1f3 g8f6 c2c4 c7c6 b1c3',
+    'g1f3 d7d5 d2d4 g8f6 c2c4 e7e6',
+    'c2c4 e7e5 b1c3 g8f6 g1f3 b8c6 g2g3 d7d5',
+    'c2c4 g8f6 b1c3 e7e6 g1f3 d7d5'
+  ].map(function (s) { return s.split(' '); });
+
+  function bookMove(histUci) {
+    const cands = [];
+    for (let i = 0; i < BOOK.length; i++) {
+      const line = BOOK[i];
+      if (line.length <= histUci.length) continue;
+      let ok = true;
+      for (let j = 0; j < histUci.length; j++) if (line[j] !== histUci[j]) { ok = false; break; }
+      if (ok) cands.push(line[histUci.length]);
+    }
+    if (!cands.length) return null;
+    return cands[Math.floor(Math.random() * cands.length)];
+  }
+
+  /* ------------------- المستويات ------------------- */
+  /* كل مستوى: عمق البحث، الوقت، التشويش (noise) بالسنتي-باون، واحتمال الغلط */
+  const LEVELS = [
+    { id: 1, name: 'مبتدئ جداً', elo: 500, depth: 1, time: 400, noise: 140, blunder: 0.35, book: false },
+    { id: 2, name: 'مبتدئ', elo: 750, depth: 2, time: 600, noise: 90, blunder: 0.22, book: false },
+    { id: 3, name: 'متوسط', elo: 1000, depth: 2, time: 900, noise: 55, blunder: 0.12, book: true },
+    { id: 4, name: 'جيد', elo: 1300, depth: 3, time: 1200, noise: 30, blunder: 0.06, book: true },
+    { id: 5, name: 'قوي', elo: 1600, depth: 4, time: 1800, noise: 15, blunder: 0.02, book: true },
+    { id: 6, name: 'خبير', elo: 1900, depth: 5, time: 2600, noise: 0, blunder: 0.0, book: true },
+    { id: 7, name: 'ماستر', elo: 2200, depth: 6, time: 3000, noise: 0, blunder: 0.0, book: true }
+  ];
+  function levelForElo(elo) {
+    let best = LEVELS[0];
+    for (let i = 0; i < LEVELS.length; i++) if (Math.abs(LEVELS[i].elo - elo) < Math.abs(best.elo - elo)) best = LEVELS[i];
+    return best;
+  }
+
+  /* اختيار نقلة المحرك حسب المستوى */
+  function pickMove(p, level, histUci) {
+    const lv = typeof level === 'number' ? (LEVELS[level - 1] || LEVELS[3]) : level;
+    if (lv.book && histUci && histUci.length < 12) {
+      const bm = bookMove(histUci);
+      if (bm) {
+        const m = C.findByUci(p, bm);
+        if (m) return { move: m, score: 0, depth: 0, book: true, nodes: 0 };
+      }
+    }
+    /* المستويات الضعيفة تحتاج تقييم دقيق لكل نقلة (نافذة كاملة) حتى يكون الـ noise منطقي،
+       لأن البحث بـ alpha-beta يرجّع حدوداً لا قيماً دقيقة للنقلات الأقل جودة */
+    if (lv.noise > 0 || lv.blunder > 0) {
+      resetTables();
+      const rs = rootScores(p, lv.depth, lv.time, null);
+      let list = rs.list;
+      if (!list.length) return null;
+      const topScore = list[0].score;
+      if (Math.abs(topScore) > MATE - 200) {
+        return { move: list[0].move, score: topScore, depth: lv.depth, nodes: rs.nodes };
+      }
+      if (lv.blunder > 0 && Math.random() < lv.blunder && list.length > 1) {
+        const from = Math.max(1, Math.floor(list.length / 2));
+        const pickIdx = from + Math.floor(Math.random() * (list.length - from));
+        const chosen = list[pickIdx];
+        if (Math.abs(chosen.score) < MATE - 200)
+          return { move: chosen.move, score: chosen.score, depth: lv.depth, nodes: rs.nodes, weak: true };
+      }
+      let bestN = -INF, bestM = list[0].move, bestS = list[0].score;
+      for (let i = 0; i < list.length; i++) {
+        const n = list[i].score + (Math.random() * 2 - 1) * lv.noise;
+        if (n > bestN) { bestN = n; bestM = list[i].move; bestS = list[i].score; }
+      }
+      return { move: bestM, score: bestS, depth: lv.depth, nodes: rs.nodes };
+    }
+    const r = searchBest(p, lv.depth, lv.time);
+    if (!r) return null;
+    return r;
+  }
+
+  /* ------------------- تحليل نقلة اللاعب (للكوتش) ------------------- */
+  function analyzeMove(p, played, depth, timeMs) {
+    if (!played) return null;
+    resetTables();
+    const d = depth || 3, t = timeMs || 1400;
+    const r = searchBest(p, d, t);
+    if (!r) return null;
+    const bestMove = r.move, bestScore = r.score;
+    let playedScore = bestScore;
+    let isBest = (played.from === bestMove.from && played.to === bestMove.to && played.promo === bestMove.promo);
+    if (!isBest && r.scores && r.scores.length) {
+      for (let i = 0; i < r.scores.length; i++) {
+        const s = r.scores[i];
+        if (s.move.from === played.from && s.move.to === played.to && s.move.promo === played.promo) { playedScore = s.score; break; }
+      }
+      /* إعادة بحث بنافذة كاملة للنقلة الملعوبة لضمان دقّة التقييم */
+      nodes = 0; aborted = false; stopAt = Date.now() + t;
+      const u = C.makeMove(p, played);
+      const exact = -negamax(p, d - 1, -INF, INF, 1);
+      C.unmakeMove(p, played, u);
+      if (!aborted) playedScore = exact;
+    }
+    let loss = bestScore - playedScore;
+    if (loss < 0) loss = 0;
+    if (isBest) loss = 0;
+    return {
+      best: bestMove, bestScore: bestScore, playedScore: playedScore,
+      cpLoss: Math.min(loss, 1200), isBest: isBest, depth: r.depth
+    };
+  }
+
+  G.REngine = {
+    VAL: VAL, MATE: MATE, evaluate: evaluate, searchBest: searchBest, rootScores: rootScores,
+    pickMove: pickMove, analyzeMove: analyzeMove, LEVELS: LEVELS, levelForElo: levelForElo,
+    bookMove: bookMove, resetTables: resetTables
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ==========================================================================
+   RILEX CHESS — COACH
+   تحليل أداء الطالب + كشف الضعف + توليد الدروس والتمارين + نظام الإيلو
+   (كل شي محلي بالمتصفح — بلا أي API)
+   ========================================================================== */
+(function (G) {
+  'use strict';
+  const C = G.RChess, E = G.REngine;
+
+  /* ---------------- تصنيف النقلة حسب الخسارة بالسنتي-باون ---------------- */
+  const CLASSES = {
+    best: { key: 'best', ar: 'أفضل نقلة', en: 'Best', cls: 'c-best', icon: '★' },
+    great: { key: 'great', ar: 'نقلة قوية', en: 'Great', cls: 'c-great', icon: '✓' },
+    good: { key: 'good', ar: 'نقلة جيدة', en: 'Good', cls: 'c-good', icon: '✓' },
+    inacc: { key: 'inacc', ar: 'عدم دقّة', en: 'Inaccuracy', cls: 'c-inacc', icon: '?!' },
+    mistake: { key: 'mistake', ar: 'خطأ', en: 'Mistake', cls: 'c-mistake', icon: '?' },
+    blunder: { key: 'blunder', ar: 'خطأ فادح', en: 'Blunder', cls: 'c-blunder', icon: '??' }
+  };
+  function classify(cpLoss, isBest) {
+    if (isBest || cpLoss <= 10) return CLASSES.best;
+    if (cpLoss <= 30) return CLASSES.great;
+    if (cpLoss <= 70) return CLASSES.good;
+    if (cpLoss <= 140) return CLASSES.inacc;
+    if (cpLoss <= 290) return CLASSES.mistake;
+    return CLASSES.blunder;
+  }
+
+  /* ---------------- مرحلة المباراة ---------------- */
+  function phaseOf(pos, moveNo) {
+    let npm = 0, pieces = 0;
+    for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) {
+      const v = pos.b[(r << 4) | f];
+      if (v === 0) continue;
+      const a = Math.abs(v);
+      if (a !== 1 && a !== 6) { npm += E.VAL[a]; pieces++; }
+    }
+    if (npm <= 1500) return 'end';
+    if (moveNo <= 10) return 'open';
+    return 'mid';
+  }
+  const PHASE_AR = { open: 'الافتتاحية (Opening)', mid: 'وسط المباراة (Middlegame)', end: 'النهاية (Endgame)' };
+
+  /* ---------------- الدقّة (Accuracy) ---------------- */
+  function accuracy(losses) {
+    if (!losses.length) return 100;
+    let sum = 0;
+    for (let i = 0; i < losses.length; i++) sum += losses[i];
+    const avg = sum / losses.length;
+    let acc = 103 * Math.exp(-0.0062 * avg) - 3;
+    if (acc > 99.9) acc = 99.9;
+    if (acc < 5) acc = 5;
+    return Math.round(acc * 10) / 10;
+  }
+
+  /* ---------------- نقاط الضعف ---------------- */
+  const WEAK = {
+    hanging: { ar: 'قطع معلّقة', en: 'Hanging pieces', icon: '🩸' },
+    tactics: { ar: 'التكتيك والفرص الضائعة', en: 'Tactics', icon: '⚡' },
+    development: { ar: 'تطوير القطع', en: 'Development', icon: '🏗️' },
+    kingsafety: { ar: 'أمان الملك', en: 'King safety', icon: '🛡️' },
+    center: { ar: 'السيطرة على المركز', en: 'Center control', icon: '🎯' },
+    endgame: { ar: 'النهايات', en: 'Endgame', icon: '👑' },
+    rooks: { ar: 'تفعيل القطع الثقيلة', en: 'Rook activity', icon: '🏛️' },
+    pawns: { ar: 'بنية البيادق', en: 'Pawn structure', icon: '🧱' },
+    queenearly: { ar: 'إخراج الملكة بوقت مبكر', en: 'Early queen', icon: '♛' }
+  };
+
+  /* كشف الضعف من سجل نقلات الطالب بمباراة واحدة */
+  function detect(moves, finalPos, myColor) {
+    const w = {};
+    const add = (k, n) => { w[k] = (w[k] || 0) + (n || 1); };
+    let pawnMovesOpen = 0, minorMovesOpen = 0, queenMovesOpen = 0, castled = false, castleMove = 99;
+    let lastMoveNo = 0;
+
+    for (let i = 0; i < moves.length; i++) {
+      const m = moves[i];
+      lastMoveNo = m.moveNo;
+      const bad = (m.cls === 'mistake' || m.cls === 'blunder');
+
+      if (m.phase === 'open') {
+        if (m.pieceType === 1) pawnMovesOpen++;
+        if (m.pieceType === 2 || m.pieceType === 3) minorMovesOpen++;
+        if (m.pieceType === 5) queenMovesOpen++;
+      }
+      if (m.flag === 'k' || m.flag === 'q') { castled = true; castleMove = Math.min(castleMove, m.moveNo); }
+
+      if (bad) {
+        /* خسارة مادية مجانية */
+        if (m.lostMaterial >= 250) add('hanging', m.cls === 'blunder' ? 2 : 1);
+        /* فرصة تكتيكية ضائعة: أفضل نقلة كانت أكل أو كش */
+        if (m.bestWasTactic && m.cpLoss >= 160) add('tactics');
+        if (m.phase === 'end') add('endgame', m.cls === 'blunder' ? 2 : 1);
+        if (m.phase === 'open') add('development');
+        if (m.kingExposed) add('kingsafety');
+      }
+    }
+
+    /* تطوير: كم قطعة خفيفة بقيت ببيتها بعد النقلة 10 */
+    if (moves.length >= 8) {
+      const undev = countUndeveloped(finalPos, myColor);
+      if (lastMoveNo >= 10 && undev >= 3) add('development', 2);
+      if (pawnMovesOpen >= 6) add('development');
+      if (queenMovesOpen >= 2 && minorMovesOpen <= 1) add('queenearly', 2);
+    }
+    /* أمان الملك: ما عمل كاستلينغ وبقي اللعب طويل */
+    if (!castled && lastMoveNo >= 14) add('kingsafety', 2);
+    /* المركز */
+    if (moves.length >= 10 && centerScore(finalPos, myColor) <= 1) add('center', 2);
+    /* الرخّ */
+    if (lastMoveNo >= 18 && rooksAsleep(finalPos, myColor)) add('rooks', 2);
+    /* البيادق */
+    const ps = pawnFaults(finalPos, myColor);
+    if (ps >= 2) add('pawns', 1);
+    return w;
+  }
+
+  function countUndeveloped(p, col) {
+    const home = col === 1 ? [1, 2, 5, 6] : [113, 114, 117, 118];
+    let n = 0;
+    for (let i = 0; i < home.length; i++) {
+      const v = p.b[home[i]];
+      if (v !== 0 && v * col > 0 && (Math.abs(v) === 2 || Math.abs(v) === 3)) n++;
+    }
+    return n;
+  }
+  function centerScore(p, col) {
+    const sqs = [51, 52, 67, 68];  /* d4 e4 d5 e5 */
+    let n = 0;
+    for (let i = 0; i < sqs.length; i++) {
+      const v = p.b[sqs[i]];
+      if (v !== 0 && v * col > 0) n++;
+      if (C.isAttacked(p, sqs[i], col)) n++;
+    }
+    return n;
+  }
+  function rooksAsleep(p, col) {
+    const home = col === 1 ? [0, 7] : [112, 119];
+    let n = 0;
+    for (let i = 0; i < home.length; i++) if (p.b[home[i]] === col * 4) n++;
+    return n >= 2;
+  }
+  function pawnFaults(p, col) {
+    const f = [0, 0, 0, 0, 0, 0, 0, 0];
+    for (let r = 0; r < 8; r++) for (let x = 0; x < 8; x++) if (p.b[(r << 4) | x] === col * 1) f[x]++;
+    let bad = 0;
+    for (let x = 0; x < 8; x++) {
+      if (f[x] > 1) bad++;
+      if (f[x] > 0 && (x === 0 ? 0 : f[x - 1]) + (x === 7 ? 0 : f[x + 1]) === 0) bad++;
+    }
+    return bad;
+  }
+
+  /* ---------------- نظام الإيلو ---------------- */
+  function kFactor(games) { return games < 10 ? 60 : games < 30 ? 40 : 24; }
+  function expected(my, opp) { return 1 / (1 + Math.pow(10, (opp - my) / 400)); }
+  function eloChange(my, opp, score, games) {
+    const k = kFactor(games);
+    const e = expected(my, opp);
+    const d = k * (score - e);
+    return { delta: Math.round(d), expected: e, k: k };
+  }
+  const BANDS = [
+    [0, 900, 'مبتدئ (Beginner)'], [900, 1200, 'ناشئ (Novice)'], [1200, 1500, 'متوسط (Intermediate)'],
+    [1500, 1800, 'قوي (Advanced)'], [1800, 2100, 'خبير (Expert)'], [2100, 2300, 'ماستر وطني (NM)'],
+    [2300, 2500, 'إنترناشونال ماستر (IM)'], [2500, 4000, 'غراندماستر (GM)']
+  ];
+  function band(elo) {
+    for (let i = 0; i < BANDS.length; i++) if (elo >= BANDS[i][0] && elo < BANDS[i][1]) return BANDS[i][2];
+    return BANDS[BANDS.length - 1][2];
+  }
+
+  /* ---------------- مكتبة الدروس (كل ضعف فيه عدّة زوايا) ---------------- */
+  /* الدرس يُركّب ديناميكياً: الزاوية تتغيّر مع كل درس، والمقدمة تُبنى من أرقام الطالب نفسه */
+  const LESSONS = {
+    hanging: [
+      {
+        t: 'قاعدة الثلاث ثواني — قبل كل نقلة',
+        fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4',
+        hl: ['f7', 'e5', 'c6'], arrow: ['c4', 'f7'],
+        see: 'شوف f7: الفيل والفرس عم يطالعوا عليها. كل مربّع عليه مهاجمين أكثر من مدافعين = خطر.',
+        rules: [
+          'قبل ما تحرّك: عدّ **مهاجمين** و**مدافعين** كل قطعة إلك بالرقعة.',
+          'إذا قطعة إلك مهاجمها ٢ ومدافعها ١ → إمّا تدافع عنها زيادة، أو تحرّكها، أو تأكل أول.',
+          'بعد ما تختار نقلتك، إسأل: "هاي النقلة شو خلّت مكشوف؟" — القطعة اللي كانت تدافع عن شي، لما تتحرّك بتترك فراغ.',
+          'النقلات اللي بتخلّي قطعتك بمربّع بلا دفاع (Loose piece) هي أكثر مصدر blunders تحت ١٥٠٠.'
+        ],
+        drill: 'hang'
+      },
+      {
+        t: 'الـ Loose Pieces Drop Off — كل قطعة بلا دفاع هي هدف',
+        fen: 'r2qkb1r/ppp2ppp/2n5/3np3/2B5/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 7',
+        hl: ['d5', 'c6', 'c4'], arrow: ['c4', 'd5'],
+        see: 'الفرس بـ d5 بلا دفاع. أي نقلة تخلّي قطعتك "سرحانة" بوسط الرقعة بتكلّفك.',
+        rules: [
+          'قطعتين إلك بلا دفاع بنفس الوقت = دعوة مفتوحة للـ fork والـ double attack.',
+          'القاعدة: خلّي قطعك مدافعة عن بعضها (chain)، مش كل واحدة لحالها.',
+          'عند كل أكل (capture) احسب كل السلسلة: مين ياكل بعد مين، ومين يبقى بالآخر.',
+          'إذا ما قدرت تحسب كل السلسلة بالمباراة → ما تفتح الأكل من عندك.'
+        ],
+        drill: 'hang'
+      },
+      {
+        t: 'الفحص المعاكس — نقلة الخصم الجاية',
+        fen: 'rnbqk2r/ppp2ppp/3b4/3p4/3P4/2N1B3/PPP2PPP/R2QKB1R b KQkq - 0 8',
+        hl: ['d6', 'd5', 'e3'],
+        see: 'قبل ما تنقل، طالع النقلة اللي بدّه يعملها الخصم. أغلب الـ blunders سببها إنك تطالع نقلتك بس.',
+        rules: [
+          'بعد ما تقرّر نقلتك: تخيّلها معمولة، وبعدين دوّر على أقوى نقلة للخصم.',
+          'دوّر دايماً على ٣ أشياء عند الخصم: كش (Check)، أكل (Capture)، تهديد (Threat) — إختصار CCT.',
+          'إذا نقلة الخصم الجاية تربح مادة → نقلتك غلط حتى لو حلوة بالشكل.',
+          'هاي العادة لحالها بترفعك ١٠٠-٢٠٠ إيلو بلا أي دراسة إضافية.'
+        ],
+        drill: 'hang'
+      }
+    ],
+    tactics: [
+      {
+        t: 'الـ Fork — الفرس بياكل تنتين بنقلة',
+        fen: 'r1bqkb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 5',
+        hl: ['e4', 'c4', 'f7'],
+        see: 'الفرس بالمركز بيضرب ٨ مربّعات. دوّر دايماً على مربّع يجمع ملك + ملكة أو ملك + رخ.',
+        rules: [
+          'الفرس = سلاح الـ fork الأول. دوّر على مربّعات تضرب قطعتين ثقيلتين مع بعض.',
+          'المربّعات الذهبية للفرس: e5/d5/f5/c5 (وللأسود e4/d4/f4/c4).',
+          'قبل أي fork: تأكّد إنّ المربّع محمي أو إنّ الربح أكبر من الفرس.',
+          'التكتيك ما بيجي من الفراغ — بيجي لما قطع الخصم تكون بلا دفاع أو ملكه مكشوف.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'الـ Pin والـ Skewer — القطعة المسمّرة ما بتهرب',
+        fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 0 5',
+        hl: ['f6', 'd8', 'c3'], arrow: ['c1', 'g5'],
+        see: 'Bg5 بيسمّر الفرس f6 قدّام الملكة. القطعة المسمّرة بتصير هدف ثابت — اضربها ببيدق.',
+        rules: [
+          'Pin = قطعة ما تقدر تتحرّك لأنّ وراها قطعة أغلى.',
+          'بعد الـ pin، اهجم على القطعة المسمّرة ببيدق (h6/g5 أو d4) — هي ما بتقدر تهرب.',
+          'Skewer = العكس: القطعة الغالية قدّام والرخيصة ورا.',
+          'إذا ملكك على نفس الخط/القطر مع ملكتك أو رختك → إنت معرّض نفسك لـ pin.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'الـ Discovered Attack والكش المزدوج',
+        fen: 'r2qk2r/ppp2ppp/2n5/3Bp3/8/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 9',
+        hl: ['d5', 'e8', 'a8'],
+        see: 'لما تحرّك القطعة اللي قدّام، القطعة اللي ورا تفتح خطّها. هاي أقوى حيلة تكتيكية.',
+        rules: [
+          'دوّر على خطوط فيها: قطعتك الخفيفة قدّام، ورختك أو ملكتك ورا، وملك الخصم بالآخر.',
+          'الكش المزدوج (Double check) = الخصم لازم يحرّك الملك، ما بيقدر يسدّ ولا يأكل.',
+          'استخدم الكش المزدوج بالتضحيات: تقدر تعطي ملكة وتربح مات.',
+          'قبل ما تحسب تكتيك: اسأل "ملك الخصم بأي حالة؟ مكشوف ولا محمي؟"'
+        ],
+        drill: 'tactic'
+      }
+    ],
+    development: [
+      {
+        t: 'قواعد الافتتاحية الثلاث — بالترتيب',
+        fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4',
+        hl: ['f3', 'c4', 'e4', 'e1'], arrow: ['e1', 'g1'],
+        see: 'شوف الأبيض: بيدق بالمركز، فرس وفيل طالعين، وجاهز للكاستلينغ. هاي افتتاحية صحّ بـ ٤ نقلات.',
+        rules: [
+          '١) بيدق بالمركز (e4 أو d4). ٢) طلّع الفرسان والأفيال. ٣) كاستلينغ.',
+          'ما تحرّك نفس القطعة مرّتين بالافتتاحية بلا سبب — كل نقلة لازم تطلّع قطعة جديدة.',
+          'الفرسان قبل الأفيال عادةً: Nf3/Nc3 بيوصلوا للمركز أسرع.',
+          'لا تطلع الملكة بدري — بتصير هدف وبتخسر tempo وهي عم تهرب.',
+          'الهدف من الافتتاحية: مش ربح بيدق، بل الوصول لوسط مباراة كل قطعك فيه شغّالة.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'الـ Tempo — الوقت أغلى من البيدق بالافتتاحية',
+        fen: 'rnb1kbnr/pppp1ppp/8/4p3/4P2q/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3',
+        hl: ['h4', 'f3'], arrow: ['f3', 'h4'],
+        see: 'الملكة طلعت بدري. كل نقلة بتهجم عليها = tempo مجاني للخصم وتطوير مجاني.',
+        rules: [
+          'Tempo = نقلة واحدة. ٣ tempo = قطعة متطوّرة زيادة = هجوم.',
+          'إذا الخصم طلّع ملكته بدري، هاجمها بقطع متطوّرة (Nc3, Be2, Nf3) مش ببيادق ضعيفة.',
+          'ما تاكل بيدق بالافتتاحية إذا ثمنه نقلتين تطوير.',
+          'قيس تطويرك: عدّ قطعك الشغّالة ضدّ قطع الخصم — إذا إنت ٤ وهو ٢ → إفتح اللعب!'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'القطعة النايمة = قطعة ناقصة',
+        fen: 'r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2PP1N2/PP3PPP/RNBQK2R b KQkq - 0 6',
+        hl: ['b1', 'c1', 'a1', 'h1'],
+        see: 'الأبيض عنده فرس b1 وفيل c1 نايمين. يعني عملياً عم يلعب بقطع أقل.',
+        rules: [
+          'كل قطعة بَبيتها = صفر تأثير. اللعب بقطع ناقصة = خسارة محسومة بوسط المباراة.',
+          'بعد الكاستلينغ: وصّل الرخّين (Connect the rooks) — طلّع كل شي من الصف الأول.',
+          'الفيل المحصور ورا بيادقه = قطعة ميتة. إفتح له قطر أو بدّله.',
+          'قبل أي هجوم: تأكّد إنّ كل قطعك مشاركة. الهجوم بقطعتين ضدّ دفاع بثلاثة بيفشل.'
+        ],
+        drill: 'tactic'
+      }
+    ],
+    kingsafety: [
+      {
+        t: 'الكاستلينغ مش رفاهية — هو ضرورة',
+        fen: 'r1bq1rk1/pppp1ppp/2n2n2/2b1p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 1',
+        hl: ['g1', 'g8', 'f1', 'f8'],
+        see: 'الملكين بأمان والرخّين صاروا بالوسط. هاي الوضعية الصحّية.',
+        rules: [
+          'كاستلينغ قبل النقلة ١٠ — خصوصاً إذا الملكات لسّا بالرقعة.',
+          'ما تحرّك بيادق f/g/h اللي قدّام ملكك بلا سبب — كل بيدق يتحرّك = ثغرة.',
+          'الملك بالوسط + ملف مفتوح = كارثة. إذا الملف اللي فيه ملكك انفتح، إهرب فوراً.',
+          'قبل أي هجوم على الجناح: تأكّد ملكك بأمان. الهجوم بملك مكشوف بينقلب عليك.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'الثغرات حول الملك (h7/g7/f7)',
+        fen: 'r1bq1rk1/ppp2ppp/2np4/2b1p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 1',
+        hl: ['f7', 'g7', 'h7', 'c4'], arrow: ['c4', 'f7'],
+        see: 'f7/f2 هو أضعف مربّع بالرقعة بالافتتاحية — عليه الملك والرخّ وما يحميه غير الملك.',
+        rules: [
+          'مربّع f7 (وf2 للأبيض) محمي من الملك بس → هدف أوّل لكل هجوم.',
+          'إذا الخصم وجّه فيل على c4 + فرس على g5 → في تهديد على f7. دافع بـ e6 أو Be6 أو Rf8.',
+          'البيدق h7/h2: لا تحرّكه بلا داعي — h6 بيعطي الخصم هدف لـ g5-g6.',
+          'إذا الخصم بدأ يكدّس قطع على جناح ملكك، إفتح اللعب بالمركز — أفضل دفاع هجوم مركزي.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'الصف الأخير (Back rank) — المات الصامت',
+        fen: '6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1',
+        hl: ['a8', 'g8', 'h7'], arrow: ['a1', 'a8'],
+        see: 'Ra8# — الملك مسجون ورا بيادقه. هاد المات بيصير بآلاف المباريات كل يوم.',
+        rules: [
+          'بعد الكاستلينغ: اعمل متنفّس للملك (h3 أو g3) بوقت مناسب.',
+          'قبل ما تاخد أي بيدق بالنهاية، إسأل: صفّي الأخير محمي؟',
+          'الرخ على ملف مفتوح + صف أخير ضعيف = مات.',
+          'إذا رختك لحالها تدافع عن الصف الأخير، ما تحرّكها — هاي قطعة "مربوطة" (overloaded).'
+        ],
+        drill: 'mate'
+      }
+    ],
+    center: [
+      {
+        t: 'المركز = الأرض العالية',
+        fen: 'rnbqkbnr/pppp1ppp/8/4p3/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2',
+        hl: ['d4', 'e4', 'd5', 'e5'],
+        see: 'بيدقين بالمركز = مساحة أكبر وقطع تتحرّك بحرّية. الخصم بيصير مخنوق.',
+        rules: [
+          'المربّعات d4/e4/d5/e5 هي قلب الرقعة — مين يسيطر عليها يسيطر على المباراة.',
+          'ما تعطي مركزك مجاناً: إذا الخصم هجم بيدقك المركزي، دافع عنه أو ابنِ مركز بديل.',
+          'الفرس بالمركز يضرب ٨ مربّعات، وبالزاوية يضرب ٢. القطعة بالمركز = ضعف القوّة.',
+          'المركز المقفول → إلعب بالأجناح. المركز المفتوح → طلّع قطعك بسرعة.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'السيطرة بالقطع مش بس بالبيادق',
+        fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5',
+        hl: ['e4', 'd5', 'f3', 'c3'],
+        see: 'الفرسان c3/f3 والفيل c4 كلهم بيطالعوا على d5/e5. هاي سيطرة مركزية بالقطع (Hypermodern).',
+        rules: [
+          'مش لازم بيادقك تكون بالمركز — المهم تضرب المربّعات المركزية.',
+          'الفيل على القطر الطويل (b2-g7 أو b7-g2) بيسيطر على المركز من بعيد.',
+          'قبل ما تدفع بيدق للمركز، تأكّد إنّك تقدر تدافع عنه بقطعتين.',
+          'إذا سلّمت المركز، لازم يكون عندك خطّة واضحة بالمقابل (هجوم جناح، ضرب بيدق المركز).'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'المساحة والخَنق',
+        fen: 'rnbqkb1r/pp2pppp/3p1n2/2pP4/4P3/5N2/PPP2PPP/RNBQKB1R w KQkq - 0 5',
+        hl: ['d5', 'e4', 'c5'],
+        see: 'الأبيض عنده بيدقين متقدّمين = مساحة. الأسود ما عنده مطرح يحرّك قطعه.',
+        rules: [
+          'المساحة = قطعك تلعب بـ ٤ صفوف وقطع الخصم بـ ٣.',
+          'لما يكون عندك مساحة: لا تبدّل قطع (كل تبديل بيفرّج الخصم).',
+          'لما تكون مخنوق: بدّل قطع، وافتح اللعب ببيدق (c5/e5/f5).',
+          'المساحة بلا خطة = لا شي. حدّد ضعف عند الخصم واهجم عليه.'
+        ],
+        drill: 'tactic'
+      }
+    ],
+    endgame: [
+      {
+        t: 'المربّعات المفتاحية ببيدق واحد',
+        fen: '8/8/4k3/8/8/4K3/4P3/8 w - - 0 1',
+        hl: ['d5', 'e5', 'f5', 'e6'],
+        see: 'مين ياخد المربّعات d5/e5/f5 يفوز. الملك قدّام البيدق مش ورا!',
+        rules: [
+          'بالنهايات: **الملك قطعة هجومية**. طلّعه للمركز أوّل شي.',
+          'الملك لازم يمشي قدّام بيدقه، مش يدفع البيدق لحاله.',
+          'الـ Zugzwang: خلّي الخصم هو اللي مجبور يحرّك — هيك تاخد المربّعات.',
+          'بيدق واحد زيادة بالنهاية = فوز إذا لعبت صح. لا تستسهل النهايات.'
+        ],
+        drill: 'end'
+      },
+      {
+        t: 'تفعيل الرخ بالنهاية',
+        fen: '8/5pk1/8/8/8/8/5PK1/R7 w - - 0 1',
+        hl: ['a1', 'a7', 'f7'], arrow: ['a1', 'a7'],
+        see: 'الرخ ورا بيادق الخصم أو على الصف السابع = قوّة مضاعفة.',
+        rules: [
+          'الرخ بالنهاية مطرحه: الصف السابع، أو ورا بيدق الخصم الحرّ.',
+          'الرخ من بعيد أقوى: ما تحطّه قدّام البيدق، حطّه وراه.',
+          'البيدق الحرّ (Passed pawn) = أغلى شي بالنهاية. إدفعه مدعوم بالملك والرخ.',
+          'إذا ناقصك مادة: فعّل رخّك وادخل على بيادق الخصم — الدفاع السلبي بيخسر.'
+        ],
+        drill: 'end'
+      },
+      {
+        t: 'المات الأساسي: ملك + رخ',
+        fen: '8/8/8/4k3/8/8/8/R3K3 w - - 0 1',
+        hl: ['e5', 'a1'],
+        see: 'الطريقة: احصر الملك بصفّ، وقرّب ملكك، وضيّق الشبكة لحتى المات.',
+        rules: [
+          'ملك + رخ ضدّ ملك = مات أكيد. لازم تعرفها بلا تفكير.',
+          'الخطوة ١: احصر ملك الخصم بنصف الرقعة بالرخ.',
+          'الخطوة ٢: قرّب ملكك لحتى يصيروا وجه لوجه (Box method).',
+          'الخطوة ٣: نقلة انتظار بالرخ (Waiting move) → الخصم مجبور يتراجع → ضيّق أكثر.',
+          'انتبه من ٥٠ نقلة: إذا ما خلّصت المات بـ ٥٠ نقلة بتصير تعادل!'
+        ],
+        drill: 'mate'
+      }
+    ],
+    rooks: [
+      {
+        t: 'الملفات المفتوحة ملك الرخّ',
+        fen: '2r2rk1/pp3ppp/8/8/8/8/PP3PPP/2R2RK1 w - - 0 1',
+        hl: ['c1', 'c8', 'd1', 'e1'],
+        see: 'الرخ على ملف مفتوح (بلا بيادق) = ضغط. على ملف مسدود = قطعة ميتة.',
+        rules: [
+          'حطّ رخّك على الملف المفتوح أو نصف المفتوح فوراً بعد الكاستلينغ.',
+          'الرخّين على نفس الملف (Doubling) = ضعف الضغط.',
+          'الصف السابع (Seventh rank) هو مطرح الرخّ الذهبي — بياكل البيادق ويحصر الملك.',
+          'لا تلعب بالرخّ بدري بالافتتاحية — لكن لا تنساه بوسط المباراة.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'الملكة مع الرخّ — القوّة الثقيلة',
+        fen: '3r2k1/pp2qppp/8/8/8/5Q2/PP3PPP/3R2K1 w - - 0 1',
+        hl: ['d1', 'd8', 'f3'],
+        see: 'الملكة لحالها ما تعمل شي. مع الرخّ على ملف مفتوح بتصير خطر مات.',
+        rules: [
+          'ما تهجم بالملكة لحالها — الهجوم بقطعة واحدة دايماً بيفشل.',
+          'الترتيب الصح: رخّ قدّام وملكة ورا على الملف (Alekhine gun مع رخّين).',
+          'الملكة قريبة من ملك الخصم مع دعم = تهديدات مات. بلا دعم = خسارة ملكة.',
+          'قيّم قطعك الثقيلة: إذا رخّك ما عنده ملف، إبحث عن ملف تفتحه ببيدق.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'فتح الملفات ببيدق',
+        fen: 'r4rk1/pp2ppbp/2p3p1/3p4/3P4/2N1P3/PP3PPP/R4RK1 w - - 0 1',
+        hl: ['c3', 'c6', 'a1', 'f1'],
+        see: 'بدّك ملف؟ إدفع بيدق وبدّله. بعد التبديل الملف بيصير إلك.',
+        rules: [
+          'إذا كل الملفات مسدودة، إدفع بيدق (c4/f4/e4) حتى يتبدّل وينفتح ملف.',
+          'إفتح الملف اللي بيوصل لضعف عند الخصم، مش أي ملف.',
+          'قبل ما تفتح: تأكّد إنّك جاهز تحتلّ الملف أوّل — مين يحتلّ أوّل بياخده.',
+          'المركز المقفول بلا بيادق تتحرّك = تعادل. دايماً في عندك بيدق يفتح اللعب.'
+        ],
+        drill: 'tactic'
+      }
+    ],
+    pawns: [
+      {
+        t: 'البيدق المزدوج والمعزول',
+        fen: '4k3/p1p2ppp/8/8/8/8/PP1P1PPP/4K3 w - - 0 1',
+        hl: ['a7', 'c7', 'b2', 'd2'],
+        see: 'البيدق المعزول ما عنده بيدق جار يحميه → لازم قطعة تدافع عنه = قطعة مشغولة.',
+        rules: [
+          'البيدق لا يرجع لورا أبداً — كل نقلة بيدق قرار نهائي. فكّر مرّتين.',
+          'بيدق مزدوج (Doubled) = ضعف بالنهاية، لكن بيفتح ملف للرخّ (في تعويض).',
+          'بيدق معزول (Isolated) = هدف دائم. إذا عندك واحد، إلعب بسرعة وهجومياً.',
+          'سلسلة البيادق: اهجم على **قاعدة** السلسلة، مش على رأسها.'
+        ],
+        drill: 'end'
+      },
+      {
+        t: 'البيدق الحرّ (Passed pawn)',
+        fen: '8/8/1p6/1P6/8/4k3/4P3/4K3 w - - 0 1',
+        hl: ['b5', 'e2'],
+        see: 'البيدق الحرّ اللي ما قدّامه بيادق خصم = ملكة محتملة. هو أغلى ورقة بالنهاية.',
+        rules: [
+          'البيدق الحرّ: إدفعه! "Passed pawns must be pushed".',
+          'ادفعه مدعوم بالملك — بيدق لحاله بيتوقّف.',
+          'البيدق الحرّ البعيد (Outside passed pawn) بيسحب ملك الخصم وبتاكل الجناح التاني.',
+          'بالنهاية، بيدق حرّ ممكن يساوي قطعة. لا تبدّله مجاناً.'
+        ],
+        drill: 'end'
+      },
+      {
+        t: 'بيادق الهجوم (Pawn storm)',
+        fen: 'r1bq1rk1/pp2ppbp/2np2p1/8/3NP3/2N1BP2/PPP3PP/R2QKB1R w KQ - 0 10',
+        hl: ['f3', 'g2', 'h2', 'g8'],
+        see: 'بالمركز المقفول: بيادقك تمشي على جناح ملك الخصم (g4-h4-h5).',
+        rules: [
+          'هجوم البيادق بيصير لما المركز مقفول وملكك بأمان.',
+          'اهجم بالجناح اللي عندك فيه مساحة أكبر.',
+          'لا تهجم بالبيادق إذا ملكك بنفس الجناح — بتفتح على نفسك.',
+          'الهجوم ببيادق + قطع مع بعض. بيادق لحالها بتنكسر.'
+        ],
+        drill: 'tactic'
+      }
+    ],
+    queenearly: [
+      {
+        t: 'الملكة آخر من يطلع',
+        fen: 'rnb1kbnr/pppp1ppp/8/4p3/4P2q/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3',
+        hl: ['h4', 'f3', 'd1'],
+        see: 'Qh4 طلعت بدري: الأبيض بيطوّر قطع وهو بيهرب بالملكة. ٣ tempo هدية.',
+        rules: [
+          'الملكة أغلى قطعة — أي قطعة أرخص تقدر تهجم عليها وتطردها.',
+          'طلّع الفرسان والأفيال أوّل، الملكة بعدين وبمربّع آمن (d2/e2/c2).',
+          'الاستثناء: إذا في مات أو ربح مادة مباشر ومحسوب.',
+          'إذا الخصم طلّع ملكته بدري: هاجمها بكل نقلة تطوّر قطعة معها.'
+        ],
+        drill: 'tactic'
+      },
+      {
+        t: 'مطاردة الملكة = تطوير مجاني',
+        fen: 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 4 4',
+        hl: ['c4', 'f3', 'c6'],
+        see: 'كل نقلة بتطوّر قطعة وبتهجم بنفس الوقت = نقلة مثالية (Developing with tempo).',
+        rules: [
+          'النقلة المثالية بالافتتاحية: تطوّر قطعة + تهدّد شي + تحضّر الكاستلينغ.',
+          'لا تهجم على الملكة ببيدق يضعّف ملكك (زي g4 أو b4 وملكك هناك).',
+          'بعد ما تطرد الملكة، احتلّ المركز فوراً — هاد هو الربح الحقيقي.',
+          'احسب: هل مطاردة الملكة بتخلّي قطعتي بمربّع سيّئ؟ إذا نعم، طوّر بدالها.'
+        ],
+        drill: 'tactic'
+      }
+    ]
+  };
+
+  /* تمارين مُتحقَّقة: كل وضعية فيها حلّ واحد قوي (تولّدت من مباريات حقيقية
+     وتأكّدنا منها بالمحرك بعمق ٥). الحلّ يُحسب لحظياً بالمحرك — ما في جواب محفوظ. */
+  const PUZZLES = {
+    mate: [
+      '6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1',
+      'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
+      '6rk/6pp/8/6N1/8/8/8/K6Q w - - 0 1',
+      'rn3q1r/ppp2ppn/3b3p/2k1p2P/PN6/5NPb/1PPPPP1R/R1BQK3 w Q - 0 15',
+      '1n2kb1r/1pp2p2/3p1np1/8/4P1b1/P2P3r/R1Pp2KP/7R b k - 2 22',
+      '1k6/2p3Rr/p1p1B2p/1pB5/2P3P1/P7/2P3PP/4R2K w - - 1 27',
+      '1k6/2p4R/2p1B3/2B5/1P6/P3R1p1/6PP/7K w - - 0 32'
+    ],
+    hang: [
+      '4k3/8/8/3q4/8/8/8/3QK3 w - - 0 1',
+      '6k1/8/8/8/8/8/6q1/K5R1 w - - 0 1',
+      'r1bqk2r/pppp1ppp/2n5/2b1p3/2B1n3/3P1N2/PPP2PPP/RNBQK2R w KQkq - 0 7',
+      'r1bk1bnr/p1ppq1p1/1p3p2/3P3B/4Q3/8/PPP2PPP/RNB2RK1 b - - 2 11',
+      'r1b1kbnr/pp1ppp1p/nq4p1/2p5/2N1P3/8/PPPPNPPP/R1BQKB1R w KQkq - 2 5',
+      '1rb2kn1/1p1pppb1/n7/1pQ4r/2P1P3/3P1pP1/PP3P1P/R3KB1R w KQ - 0 16',
+      '5k2/1R2p3/4np2/P6P/2P3P1/3rpp1R/2Q2P2/4K3 w - - 0 36',
+      'rnbqkb1r/2pppp1p/pp3n2/2Q5/2P5/3PPp2/PP3PPP/RNB1KB1R b KQkq - 1 7',
+      '6r1/rbpk1q1p/4p3/p2pP2R/Pp3P2/1P2P3/3N1P2/2R1KB2 b - - 4 35'
+    ],
+    tactic: [
+      'r3k2r/ppp2ppp/8/3N4/8/8/PPP2PPP/R3K2R w KQkq - 0 1',
+      'rn3q1r/1pp2pp1/7p/p5kP/P2NP3/1P1P2PR/2P2P2/R2QK3 w - - 0 26',
+      '3r4/3n2P1/1rQ1p2p/p5kP/P1P5/1P1P2PR/5P2/R3K3 w - - 3 36',
+      'rnb2b1r/p2knppp/2p1p3/qP1pN3/3P4/1QN5/PP2PPPP/1RB1KB1R b K - 7 8',
+      '4k1r1/rbp2q1p/4p3/p2pP2R/Pp2NP2/1P2P3/5P2/2R1KB2 b - - 6 36',
+      'r1k5/6r1/2b1N3/p1p1P3/Pp1p1P2/1P6/5P1R/R3K3 b - - 2 49',
+      'r1bq1b1Q/4kp1p/p3p2p/2nP4/3N2P1/8/PP1NPP1P/R3KB1R w KQ - 1 14',
+      '2Q4r/3pk1pp/p4p2/8/4PB2/2PP4/2P1KP1P/R4B1R w - - 1 27',
+      'r1b2b1r/p1ppkn2/1p3pB1/3P4/8/8/PPP2PPP/RNB1R1K1 b - - 1 15'
+    ],
+    end: [
+      '8/P6k/8/8/8/8/7K/8 w - - 0 1',
+      '8/1k6/R3N3/p1p1P3/Pp1p1P2/1P6/5P2/2K5 b - - 0 55',
+      '4k3/8/4P3/p7/Pp3P2/1P6/4KP2/2N5 b - - 2 63',
+      '7R/6k1/7b/5p2/3n4/P7/2P3KP/8 b - - 2 38',
+      '8/7P/8/8/1b2K1k1/8/8/8 b - - 0 68',
+      '2r3n1/kp5p/5p2/1P6/3Pp1p1/1K4P1/3P4/2R5 w - - 3 53',
+      '8/1k6/1p3p1p/1P1P4/4p3/1K6/R2P1np1/8 w - - 2 65',
+      '6k1/1p5p/P3N1p1/8/4R3/P2P4/6PP/6K1 b - - 0 40',
+      '8/8/p7/3P1k2/4N1Rp/P3K3/6PP/8 b - - 2 49'
+    ]
+  };
+
+  /* ---------------- توليد الدرس ---------------- */
+  function topWeaknesses(weaknesses, n) {
+    const arr = Object.keys(weaknesses || {}).map(function (k) { return { key: k, n: weaknesses[k] }; });
+    arr.sort(function (a, b) { return b.n - a.n; });
+    return arr.slice(0, n || 3);
+  }
+
+  function makeLesson(profile) {
+    const tops = topWeaknesses(profile.weaknesses, 3);
+    let key;
+    if (!tops.length) {
+      /* ما في داتا بعد: نبلّش بالأساسيات حسب الإيلو */
+      key = profile.elo < 1000 ? 'development' : profile.elo < 1300 ? 'hanging' : profile.elo < 1600 ? 'tactics' : 'endgame';
+    } else {
+      key = tops[0].key;
+      /* ما نكرّر نفس الدرس مرّتين ورا بعض إذا في ضعف تاني */
+      if (profile.lastLessonKey === key && tops.length > 1) key = tops[1].key;
+    }
+    const pack = LESSONS[key] || LESSONS.development;
+    const idx = ((profile.lessonCount || 0) + (profile.lessonRotate && profile.lessonRotate[key] || 0)) % pack.length;
+    const L = pack[idx];
+    const info = WEAK[key];
+
+    /* مقدمة مبنيّة على أرقام الطالب نفسه */
+    const recent = (profile.history || []).slice(-3);
+    const bl = recent.reduce(function (s, g) { return s + (g.blunders || 0); }, 0);
+    const mi = recent.reduce(function (s, g) { return s + (g.mistakes || 0); }, 0);
+    const avgAcc = recent.length ? Math.round(recent.reduce(function (s, g) { return s + (g.accuracy || 0); }, 0) / recent.length) : null;
+    const lines = [];
+    if (!recent.length) {
+      lines.push('أهلاً بيك! أنا **RILEX**، كوتشك من هلق لحتى توصل Grandmaster. ما بعرف شي عن لعبك — فخلّينا نبلّش من الأساس الصحّ، وبعد أول مباراة رح أعرف نقطة ضعفك بالضبط.');
+    } else {
+      lines.push('درسك اليوم مش عشوائي — طلع من **لعبك إنت**. من آخر ' + recent.length + ' مباريات: ' +
+        (avgAcc !== null ? 'دقّة (accuracy) **' + avgAcc + '%**، ' : '') +
+        '**' + bl + '** blunders و **' + mi + '** mistakes.');
+      lines.push('أكبر نقطة ضعف عندك هلق: **' + info.ar + ' (' + info.en + ')** — ' + (tops[0] ? 'تكرّرت ' + tops[0].n + ' مرّات بسجلّك.' : ''));
+    }
+    const lastBad = lastBlunderOf(profile);
+    if (lastBad) {
+      lines.push('مش ناسي: بآخر مباراة بالنقلة **' + lastBad.moveNo + '. ' + lastBad.san + '** خسّرتك ' +
+        Math.round(lastBad.cpLoss / 100 * 10) / 10 + ' باون. الأفضل كان **' + lastBad.bestSan + '**. منرجع لهاي بالتمرين.');
+    }
+    lines.push('المستوى الحالي: **' + band(profile.elo) + '** — باقي **' + Math.max(0, 2500 - profile.elo) + '** نقطة للـ GM. يلا نشتغل.');
+
+    return {
+      key: key, weak: info, title: L.t, fen: L.fen, hl: L.hl || [], arrow: L.arrow || null,
+      see: L.see, rules: L.rules, drill: L.drill, intro: lines, variant: idx
+    };
+  }
+
+  function lastBlunderOf(profile) {
+    const h = profile.history || [];
+    for (let i = h.length - 1; i >= 0; i--) {
+      const g = h[i];
+      if (g.worst && g.worst.cpLoss >= 200) return g.worst;
+    }
+    return null;
+  }
+
+  /* اختيار تمرين: أولوية لأخطاء الطالب نفسه، وإلا من المكتبة */
+  function makeDrill(profile, lesson) {
+    const mine = (profile.drillBank || []).slice();
+    if (mine.length) {
+      const pick = mine[Math.floor(Math.random() * mine.length)];
+      return { fen: pick.fen, source: 'own', hint: 'هاي الوضعية من مباراتك! وقتها لعبت ' + pick.played + ' وخسّرتك ' + Math.round(pick.cpLoss / 100 * 10) / 10 + ' باون. لاقي النقلة الصحّ هالمرّة.' };
+    }
+    const bank = PUZZLES[lesson.drill] || PUZZLES.tactic;
+    const fen = bank[Math.floor(Math.random() * bank.length)];
+    return { fen: fen, source: 'lib', hint: 'لاقي أفضل نقلة بهالوضعية. فكّر بـ CCT: كش، أكل، تهديد.' };
+  }
+
+  /* ---------------- التقرير بعد المباراة ---------------- */
+  function review(game, profile) {
+    const mv = game.myMoves;
+    const losses = mv.map(function (m) { return m.cpLoss; });
+    const acc = accuracy(losses);
+    const cnt = { best: 0, great: 0, good: 0, inacc: 0, mistake: 0, blunder: 0 };
+    mv.forEach(function (m) { cnt[m.cls] = (cnt[m.cls] || 0) + 1; });
+    let worst = null;
+    mv.forEach(function (m) { if (!worst || m.cpLoss > worst.cpLoss) worst = m; });
+
+    const good = [], bad = [], next = [];
+    if (acc >= 85) good.push('دقّة **' + acc + '%** — هاد مستوى ممتاز، لعبك كان نظيف.');
+    else if (acc >= 70) good.push('دقّة **' + acc + '%** — أساس منيح، بس في نقلات ضايعة.');
+    else if (acc >= 55) good.push('دقّة **' + acc + '%** — في شغل لازم يصير، وهاد طبيعي بهالمرحلة.');
+    else good.push('دقّة **' + acc + '%** — صريح معك: كتير نقلات ضايعة. بس هاد بالضبط اللي رح نصلّحه.');
+
+    if (cnt.best + cnt.great > 0) good.push('**' + (cnt.best + cnt.great) + '** نقلة بمستوى المحرك (best/great). هاي مش حظّ — هاي حساب صحّ.');
+    if (game.result === 'win') good.push('ربحت المباراة ضدّ محرّك بمستوى **' + game.oppElo + '**. برافو.');
+    if (cnt.blunder === 0) good.push('صفر blunders — هاي أهم إحصائية بكل المباراة.');
+
+    if (cnt.blunder) bad.push('**' + cnt.blunder + ' blunders** (أخطاء فادحة) — كل واحد منهم خسّرك قطعة أو وضعية.');
+    if (cnt.mistake) bad.push('**' + cnt.mistake + ' mistakes** — نقلات حسابها ناقص.');
+    if (worst && worst.cpLoss >= 150) {
+      bad.push('أسوأ نقلة: **' + worst.moveNo + '. ' + worst.san + '** (' + PHASE_AR[worst.phase] + ') — الأفضل كان **' + worst.bestSan + '** وخسّرتك ' + Math.round(worst.cpLoss / 100 * 10) / 10 + ' باون.');
+    }
+    const ph = { open: 0, mid: 0, end: 0 };
+    mv.forEach(function (m) { if (m.cls === 'mistake' || m.cls === 'blunder') ph[m.phase]++; });
+    const worstPhase = Object.keys(ph).sort(function (a, b) { return ph[b] - ph[a]; })[0];
+    if (ph[worstPhase] >= 2) bad.push('أغلب أخطائك بـ **' + PHASE_AR[worstPhase] + '** (' + ph[worstPhase] + ' أخطاء) — هون لازم نركّز.');
+
+    const tops = topWeaknesses(profile.weaknesses, 2);
+    if (tops.length) {
+      next.push('الدرس الجاي: **' + WEAK[tops[0].key].ar + ' (' + WEAK[tops[0].key].en + ')**.');
+      if (tops.length > 1) next.push('وبعدها: ' + WEAK[tops[1].key].ar + '.');
+    } else next.push('الدرس الجاي: أساسيات الافتتاحية والتطوير (Development).');
+    next.push(motivate(profile.elo, game.result));
+
+    return { accuracy: acc, counts: cnt, worst: worst, good: good, bad: bad, next: next, worstPhase: worstPhase };
+  }
+
+  function motivate(elo, result) {
+    const left = Math.max(0, 2500 - elo);
+    if (elo >= 2500) return 'وصلت **Grandmaster (2500)**! وهلق يبدأ الشغل الحقيقي — نحافظ على المستوى.';
+    const pool = [
+      'باقي **' + left + '** نقطة للـ GM. كل مباراة نظيفة بتقرّبك خطوة.',
+      'ما حدا وصل 2500 بلا ما ياكل خسارات. الفرق إنّه بيتعلّم من كل واحدة.',
+      'ركّز على نقلة واحدة أحسن بكل مباراة — هيك يتراكم الإيلو.',
+      'الـ blunders هي اللي تحدّد مستواك، مش النقلات الحلوة. قلّلهم وبترتفع.',
+      'إنت ' + Math.round((elo / 2500) * 100) + '% على طريق الـ GM. كمّل.'
+    ];
+    if (result === 'loss') pool.push('خسرت؟ منيح. الخسارة اللي تتعلّم منها أغلى من فوز بالحظّ.');
+    if (result === 'win') pool.push('فوز! هلق إرفع المستوى — اللعب ضدّ الأقوى هو اللي يعلّم.');
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  /* تعليق لحظي على نقلة حرجة */
+  function liveComment(m) {
+    if (m.cls === 'blunder') {
+      const a = ['**Blunder!** النقلة ' + m.san + ' خسّرت ' + Math.round(m.cpLoss / 100 * 10) / 10 + ' باون. الأفضل كان ' + m.bestSan + '.',
+      'أوف! ' + m.san + ' غلط فادح. قبل كل نقلة: عدّ المهاجمين والمدافعين.',
+      'هون وقعت: ' + m.san + '. ' + m.bestSan + ' كانت تربح. منرجع لهاي بالتحليل.'];
+      return a[Math.floor(Math.random() * a.length)];
+    }
+    if (m.cls === 'mistake') {
+      const a = ['**Mistake** — ' + m.san + ' ضيّعت أفضلية. ' + m.bestSan + ' كانت أقوى.',
+      'نقلة ' + m.san + ' مش دقيقة. فكّر بـ CCT قبل ما تنقل.'];
+      return a[Math.floor(Math.random() * a.length)];
+    }
+    if (m.cls === 'best') {
+      const a = ['**نقلة المحرك!** ' + m.san + ' هي الأفضل بالوضعية. هيك مظبوط.',
+      'ممتاز — ' + m.san + ' أفضل نقلة. كمّل هيك.'];
+      return a[Math.floor(Math.random() * a.length)];
+    }
+    if (m.cls === 'great') return 'نقلة قوية (' + m.san + ') — قريبة من الأفضل.';
+    return null;
+  }
+
+  G.RCoach = {
+    CLASSES: CLASSES, WEAK: WEAK, PHASE_AR: PHASE_AR, LESSONS: LESSONS, PUZZLES: PUZZLES,
+    classify: classify, phaseOf: phaseOf, accuracy: accuracy, detect: detect,
+    kFactor: kFactor, expected: expected, eloChange: eloChange, band: band,
+    topWeaknesses: topWeaknesses, makeLesson: makeLesson, makeDrill: makeDrill,
+    review: review, motivate: motivate, liveComment: liveComment
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ==========================================================================
+   RILEX CHESS — CRYPTO & STORAGE
+   تشفير حقيقي بالـ Web Crypto API: PBKDF2-SHA256 + AES-GCM 256
+   ========================================================================== */
+(function (G) {
+  'use strict';
+
+  const SUB = (G.crypto && G.crypto.subtle) ? G.crypto.subtle : null;
+  const HASH_ITER = 210000;    /* تكرارات هاش كلمة سر الحساب */
+  const FILE_ITER = 150000;    /* تكرارات مفتاح تشفير ملف النسخة الاحتياطية */
+
+  function enc(s) { return new TextEncoder().encode(s); }
+  function dec(b) { return new TextDecoder().decode(b); }
+
+  function b64(buf) {
+    const bytes = new Uint8Array(buf);
+    let s = '';
+    for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+    return btoa(s);
+  }
+  function unb64(str) {
+    const s = atob(String(str).replace(/\s+/g, ''));
+    const out = new Uint8Array(s.length);
+    for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
+    return out;
+  }
+  function rand(n) {
+    const a = new Uint8Array(n);
+    G.crypto.getRandomValues(a);
+    return a;
+  }
+  function ensure() {
+    if (!SUB) throw new Error('متصفحك ما بيدعم Web Crypto. استخدم متصفح حديث عبر https أو localhost.');
+  }
+
+  /* ------- اشتقاق مفتاح من كلمة السر ------- */
+  async function deriveBits(pass, salt, iter, bits) {
+    ensure();
+    const base = await SUB.importKey('raw', enc(pass), 'PBKDF2', false, ['deriveBits']);
+    return await SUB.deriveBits({ name: 'PBKDF2', salt: salt, iterations: iter, hash: 'SHA-256' }, base, bits);
+  }
+  async function deriveKey(pass, salt, iter) {
+    ensure();
+    const base = await SUB.importKey('raw', enc(pass), 'PBKDF2', false, ['deriveKey']);
+    return await SUB.deriveKey(
+      { name: 'PBKDF2', salt: salt, iterations: iter, hash: 'SHA-256' },
+      base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  }
+
+  /* ------- هاش كلمة سر الحساب (ما نخزّن الكلمة الصريحة أبداً) ------- */
+  async function hashPassword(pass) {
+    const salt = rand(16);
+    const bits = await deriveBits(pass, salt, HASH_ITER, 256);
+    return { algo: 'PBKDF2-SHA256', iter: HASH_ITER, salt: b64(salt), hash: b64(bits) };
+  }
+  async function verifyPassword(pass, rec) {
+    try {
+      if (!rec || !rec.salt || !rec.hash) return false;
+      const bits = await deriveBits(pass, unb64(rec.salt), rec.iter || HASH_ITER, 256);
+      const a = new Uint8Array(bits), b = unb64(rec.hash);
+      if (a.length !== b.length) return false;
+      let diff = 0;
+      for (let i = 0; i < a.length; i++) diff |= (a[i] ^ b[i]);   /* مقارنة بزمن ثابت */
+      return diff === 0;
+    } catch (e) { return false; }
+  }
+
+  /* ------- تصدير/استيراد مشفّر ------- */
+  async function encryptPayload(obj, passphrase) {
+    ensure();
+    if (!passphrase || passphrase.length < 4) throw new Error('كلمة سر التشفير قصيرة جداً (٤ حروف على الأقل).');
+    const salt = rand(16), iv = rand(12);
+    const key = await deriveKey(passphrase, salt, FILE_ITER);
+    const plain = enc(JSON.stringify(obj));
+    const ct = await SUB.encrypt({ name: 'AES-GCM', iv: iv, tagLength: 128 }, key, plain);
+    return {
+      app: 'RILEX CHESS FU', version: 1, createdAt: new Date().toISOString(),
+      kdf: { name: 'PBKDF2', hash: 'SHA-256', iterations: FILE_ITER },
+      cipher: 'AES-GCM-256',
+      salt: b64(salt), iv: b64(iv), ciphertext: b64(ct)
+    };
+  }
+
+  async function decryptPayload(file, passphrase) {
+    ensure();
+    if (!file || !file.ciphertext || !file.salt || !file.iv) throw new Error('الملف تالف أو مش ملف RILEX.');
+    let plain;
+    try {
+      const key = await deriveKey(passphrase, unb64(file.salt), (file.kdf && file.kdf.iterations) || FILE_ITER);
+      plain = await SUB.decrypt({ name: 'AES-GCM', iv: unb64(file.iv), tagLength: 128 }, key, unb64(file.ciphertext));
+    } catch (e) {
+      throw new Error('كلمة السر غير صحيحة أو الملف تالف');
+    }
+    let obj;
+    try { obj = JSON.parse(dec(plain)); }
+    catch (e) { throw new Error('كلمة السر غير صحيحة أو الملف تالف'); }
+    if (!obj || typeof obj !== 'object' || !obj.username || !obj.profile) throw new Error('بيانات الحساب غير صالحة داخل الملف.');
+    return obj;
+  }
+
+  G.RCrypto = {
+    hashPassword: hashPassword, verifyPassword: verifyPassword,
+    encryptPayload: encryptPayload, decryptPayload: decryptPayload,
+    b64: b64, unb64: unb64, available: !!SUB
+  };
+
+  /* =================== التخزين المحلي =================== */
+  const DB_KEY = 'rilex_chess_db_v1';
+
+  function blankProfile(elo) {
+    const now = new Date().toISOString();
+    return {
+      elo: elo || 800, peakElo: elo || 800, startElo: elo || 800,
+      gamesPlayed: 0, wins: 0, losses: 0, draws: 0,
+      weaknesses: {}, history: [], eloCurve: [{ t: now, elo: elo || 800 }],
+      lessonsDone: 0, lessonCount: 0, lastLessonKey: null, lessonRotate: {},
+      drillBank: [], drillsSolved: 0, drillsTried: 0,
+      currentLesson: null, levelMode: 'auto', manualLevel: 4, clockMin: 10,
+      createdAt: now, lastActive: now
+    };
+  }
+
+  function loadDB() {
+    try {
+      const raw = localStorage.getItem(DB_KEY);
+      if (!raw) return { accounts: {}, lastUser: null };
+      const db = JSON.parse(raw);
+      if (!db || typeof db !== 'object' || !db.accounts) return { accounts: {}, lastUser: null };
+      return db;
+    } catch (e) {
+      console.warn('فشل قراءة البيانات المحلية، رح نبلّش بقاعدة فاضية.', e);
+      return { accounts: {}, lastUser: null };
+    }
+  }
+  function saveDB(db) {
+    try { localStorage.setItem(DB_KEY, JSON.stringify(db)); return true; }
+    catch (e) { return false; }
+  }
+
+  G.RStore = {
+    DB_KEY: DB_KEY, blankProfile: blankProfile, loadDB: loadDB, saveDB: saveDB,
+    list: function () {
+      const db = loadDB();
+      return Object.keys(db.accounts).map(function (u) {
+        const a = db.accounts[u];
+        return { username: u, elo: a.profile.elo, games: a.profile.gamesPlayed, lastActive: a.profile.lastActive };
+      }).sort(function (a, b) { return (b.lastActive || '').localeCompare(a.lastActive || ''); });
+    },
+    get: function (u) { return loadDB().accounts[u] || null; },
+    put: function (acct) {
+      const db = loadDB();
+      db.accounts[acct.username] = acct;
+      db.lastUser = acct.username;
+      return saveDB(db);
+    },
+    remove: function (u) {
+      const db = loadDB();
+      delete db.accounts[u];
+      if (db.lastUser === u) db.lastUser = null;
+      return saveDB(db);
+    },
+    lastUser: function () { return loadDB().lastUser; },
+    setLastUser: function (u) { const db = loadDB(); db.lastUser = u; return saveDB(db); }
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* ==========================================================================
+   RILEX CHESS — APP / UI
+   ربط كل شي: الشاشات، الرقعة التفاعلية، الجلسة التدريبية، الحساب، التصدير
+   ========================================================================== */
+(function () {
+  'use strict';
+  const C = window.RChess, E = window.REngine, K = window.RCoach, X = window.RCrypto, S = window.RStore;
+  const VERSION = '1.0.0';
+  const GLYPH = { 1: '♟', 2: '♞', 3: '♝', 4: '♜', 5: '♛', 6: '♚' };
+
+  const $ = function (s, r) { return (r || document).querySelector(s); };
+  const $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  const esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  const md = function (s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'); };
+  const nextFrame = function () { return new Promise(function (r) { requestAnimationFrame(function () { setTimeout(r, 0); }); }); };
+  const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  const nowISO = function () { return new Date().toISOString(); };
+  const fmtDate = function (iso) {
+    try { const d = new Date(iso); return d.toLocaleDateString('ar-EG', { day: '2-digit', month: '2-digit', year: '2-digit' }); }
+    catch (e) { return '—'; }
+  };
+
+  /* ===================== تنبيهات / مودال ===================== */
+  function toast(msg, type, ms) {
+    const t = document.createElement('div');
+    t.className = 'toast' + (type ? ' ' + type : '');
+    t.innerHTML = md(msg);
+    $('#toasts').appendChild(t);
+    setTimeout(function () { t.style.opacity = '0'; setTimeout(function () { t.remove(); }, 300); }, ms || 3600);
+  }
+  function think(txt) { $('#think-txt').textContent = txt || 'RILEX عم يفكّر…'; $('#thinking').classList.remove('hide'); }
+  function unthink() { $('#thinking').classList.add('hide'); }
+
+  let modalResolve = null;
+  function closeModal(val) {
+    $('#overlay').classList.add('hide');
+    $('#modal').innerHTML = '';
+    const r = modalResolve; modalResolve = null;
+    if (r) r(val);
+  }
+  function openModal(html) {
+    $('#modal').innerHTML = html;
+    $('#overlay').classList.remove('hide');
+  }
+  function askText(o) {
+    return new Promise(function (res) {
+      modalResolve = res;
+      openModal('<h3>' + esc(o.title) + '</h3><div class="mb">' + md(o.msg || '') + '</div>' +
+        '<label class="fl" for="mi">' + esc(o.label || 'كلمة السر') + '</label>' +
+        '<input class="inp" id="mi" type="' + (o.type || 'password') + '" placeholder="' + esc(o.placeholder || '') + '" maxlength="128">' +
+        '<div class="btn-row"><button class="btn" id="mok">' + esc(o.ok || 'تأكيد') + '</button>' +
+        '<button class="btn ghost" id="mno">إلغاء</button></div>');
+      const inp = $('#mi');
+      inp.focus();
+      const go = function () { const v = inp.value; if (!v) { inp.focus(); return; } closeModal(v); };
+      $('#mok').onclick = go;
+      $('#mno').onclick = function () { closeModal(null); };
+      inp.onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); go(); } };
+    });
+  }
+  function confirmBox(o) {
+    return new Promise(function (res) {
+      modalResolve = res;
+      openModal('<h3>' + esc(o.title) + '</h3><div class="mb">' + md(o.msg || '') + '</div>' +
+        '<div class="btn-row"><button class="btn ' + (o.danger ? 'rd' : 'em') + '" id="mok">' + esc(o.ok || 'تأكيد') + '</button>' +
+        '<button class="btn ghost" id="mno">' + esc(o.cancel || 'إلغاء') + '</button></div>');
+      $('#mok').onclick = function () { closeModal(true); };
+      $('#mno').onclick = function () { closeModal(false); };
+    });
+  }
+  function choiceBox(o) {
+    return new Promise(function (res) {
+      modalResolve = res;
+      let btns = '';
+      o.options.forEach(function (op, i) {
+        btns += '<button class="btn ' + (op.cls || 'ghost') + ' wide" data-i="' + i + '" style="margin-bottom:8px">' + esc(op.label) + '</button>';
+      });
+      openModal('<h3>' + esc(o.title) + '</h3><div class="mb">' + md(o.msg || '') + '</div><div style="margin-top:14px">' + btns + '</div>');
+      $$('#modal button[data-i]').forEach(function (b) {
+        b.onclick = function () { closeModal(o.options[+b.dataset.i].value); };
+      });
+    });
+  }
+  function promoAsk(white) {
+    return new Promise(function (res) {
+      modalResolve = res;
+      const cls = white ? 'w' : 'b';
+      openModal('<h3>ترقية البيدق</h3><div class="mb">إختار القطعة:</div><div class="promo">' +
+        [5, 4, 3, 2].map(function (t) {
+          return '<button data-t="' + t + '"><span class="pc ' + cls + '" style="font-size:38px">' + GLYPH[t] + '</span></button>';
+        }).join('') + '</div>');
+      $$('#modal .promo button').forEach(function (b) {
+        b.onclick = function () { closeModal(+b.dataset.t); };
+      });
+    });
+  }
+
+  /* ===================== الرقعة ===================== */
+  function Board(sel) {
+    const host = $(sel);
+    const sqs = [];
+    host.innerHTML = '';
+    for (let i = 0; i < 64; i++) {
+      const d = document.createElement('div');
+      d.className = 'sq';
+      host.appendChild(d);
+      sqs.push(d);
+    }
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'arrows');
+    svg.setAttribute('viewBox', '0 0 8 8');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    host.appendChild(svg);
+
+    const B = {
+      host: host, sqs: sqs, svg: svg, pos: null, flip: false, interactive: false,
+      sel: -1, legal: [], last: null, hl: [], arrows: [], onMove: null, coords: true
+    };
+
+    B.idxOf = function (sq) {              /* 0x88 → مؤشّر العرض */
+      const r = sq >> 4, f = sq & 15;
+      return B.flip ? (r * 8 + (7 - f)) : ((7 - r) * 8 + f);
+    };
+    B.sqOf = function (idx) {
+      const row = Math.floor(idx / 8), col = idx % 8;
+      return B.flip ? ((row << 4) | (7 - col)) : (((7 - row) << 4) | col);
+    };
+
+    B.draw = function () {
+      const p = B.pos;
+      const chkSq = (p && C.inCheck(p, p.turn)) ? C.kingSq(p, p.turn) : -1;
+      for (let i = 0; i < 64; i++) {
+        const sq = B.sqOf(i), d = sqs[i];
+        const light = (((sq >> 4) + (sq & 15)) % 2) === 1;
+        let cls = 'sq ' + (light ? 'l' : 'd');
+        if (B.last && (sq === B.last.from || sq === B.last.to)) cls += ' last';
+        if (sq === B.sel) cls += ' sel';
+        if (B.hl.indexOf(C.sqName(sq)) >= 0) cls += ' hl';
+        if (sq === chkSq) cls += ' chk';
+        d.className = cls;
+        let html = '';
+        const v = p ? p.b[sq] : 0;
+        if (v !== 0) html += '<span class="pc ' + (v > 0 ? 'w' : 'b') + '">' + GLYPH[Math.abs(v)] + '</span>';
+        const lg = B.legal.filter(function (m) { return m.to === sq; });
+        if (lg.length) html += (v !== 0 || lg[0].flag === 'e') ? '<span class="ring"></span>' : '<span class="dot"></span>';
+        if (B.coords) {
+          const row = Math.floor(i / 8), col = i % 8;
+          if (row === 7) html += '<span class="cd f">' + 'abcdefgh'[sq & 15] + '</span>';
+          if (col === 0) html += '<span class="cd r">' + (1 + (sq >> 4)) + '</span>';
+        }
+        d.innerHTML = html;
+        d.dataset.sq = sq;
+      }
+      /* الأسهم */
+      svg.innerHTML = '';
+      if (B.arrows && B.arrows.length) {
+        B.arrows.forEach(function (a) {
+          const f = typeof a[0] === 'string' ? C.nameSq(a[0]) : a[0];
+          const t = typeof a[1] === 'string' ? C.nameSq(a[1]) : a[1];
+          const fi = B.idxOf(f), ti = B.idxOf(t);
+          const x1 = (fi % 8) + .5, y1 = Math.floor(fi / 8) + .5;
+          const x2 = (ti % 8) + .5, y2 = Math.floor(ti / 8) + .5;
+          const dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy) || 1;
+          const ux = dx / len, uy = dy / len;
+          const ex = x2 - ux * .34, ey = y2 - uy * .34;
+          const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          ln.setAttribute('x1', x1); ln.setAttribute('y1', y1);
+          ln.setAttribute('x2', ex); ln.setAttribute('y2', ey);
+          ln.setAttribute('stroke', a[2] || '#e3564f');
+          ln.setAttribute('stroke-width', '.13'); ln.setAttribute('stroke-linecap', 'round');
+          ln.setAttribute('opacity', '.9');
+          svg.appendChild(ln);
+          const hx = x2 - ux * .06, hy = y2 - uy * .06;
+          const px = -uy, py = ux;
+          const tri = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+          tri.setAttribute('points',
+            (hx) + ',' + (hy) + ' ' +
+            (hx - ux * .34 + px * .17) + ',' + (hy - uy * .34 + py * .17) + ' ' +
+            (hx - ux * .34 - px * .17) + ',' + (hy - uy * .34 - py * .17));
+          tri.setAttribute('fill', a[2] || '#e3564f');
+          tri.setAttribute('opacity', '.9');
+          svg.appendChild(tri);
+        });
+      }
+    };
+
+    B.set = function (o) {
+      if (o.pos !== undefined) B.pos = o.pos;
+      if (o.flip !== undefined) B.flip = o.flip;
+      if (o.last !== undefined) B.last = o.last;
+      if (o.hl !== undefined) B.hl = o.hl || [];
+      if (o.arrows !== undefined) B.arrows = o.arrows || [];
+      if (o.interactive !== undefined) B.interactive = o.interactive;
+      if (o.onMove !== undefined) B.onMove = o.onMove;
+      if (o.clearSel) { B.sel = -1; B.legal = []; }
+      B.draw();
+    };
+
+    /* --- التفاعل: نقر أو سحب --- */
+    let down = null, ghost = null, moved = false;
+
+    function myTurnPiece(sq) {
+      const p = B.pos;
+      if (!p) return false;
+      const v = p.b[sq];
+      return v !== 0 && v * p.turn > 0;
+    }
+    function selectSq(sq) {
+      B.sel = sq;
+      B.legal = C.legalMoves(B.pos, false).filter(function (m) { return m.from === sq; });
+      B.draw();
+    }
+    function clearSel() { B.sel = -1; B.legal = []; B.draw(); }
+
+    async function tryMove(from, to) {
+      const cands = C.legalMoves(B.pos, false).filter(function (m) { return m.from === from && m.to === to; });
+      if (!cands.length) return false;
+      let m = cands[0];
+      if (cands.length > 1 && cands[0].promo) {
+        const t = await promoAsk(B.pos.turn === 1);
+        if (!t) return true;
+        const pick = cands.filter(function (x) { return Math.abs(x.promo) === t; });
+        m = pick.length ? pick[0] : cands[0];
+      }
+      clearSel();
+      if (B.onMove) B.onMove(m);
+      return true;
+    }
+
+    function sqFromPoint(x, y) {
+      const el = document.elementFromPoint(x, y);
+      if (!el) return -1;
+      const s = el.closest ? el.closest('.sq') : null;
+      if (!s || !host.contains(s)) return -1;
+      return +s.dataset.sq;
+    }
+
+    host.addEventListener('pointerdown', function (e) {
+      if (!B.interactive) return;
+      const s = e.target.closest('.sq');
+      if (!s) return;
+      const sq = +s.dataset.sq;
+      down = sq; moved = false;
+      if (myTurnPiece(sq)) {
+        selectSq(sq);
+        try { host.setPointerCapture(e.pointerId); } catch (err) { }
+      }
+      e.preventDefault();
+    });
+
+    host.addEventListener('pointermove', function (e) {
+      if (!B.interactive || down === null || !myTurnPiece(down)) return;
+      if (!moved) {
+        const dx = Math.abs(e.movementX || 0), dy = Math.abs(e.movementY || 0);
+        if (dx + dy < 2) return;
+        moved = true;
+        const v = B.pos.b[down];
+        ghost = document.createElement('div');
+        ghost.style.cssText = 'position:fixed;z-index:120;pointer-events:none;transform:translate(-50%,-50%);' +
+          'font-size:' + Math.round(host.clientWidth / 8 * .95) + 'px;line-height:1';
+        ghost.innerHTML = '<span class="pc ' + (v > 0 ? 'w' : 'b') + '">' + GLYPH[Math.abs(v)] + '</span>';
+        document.body.appendChild(ghost);
+      }
+      if (ghost) { ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px'; }
+    });
+
+    host.addEventListener('pointerup', function (e) {
+      if (!B.interactive) return;
+      if (ghost) { ghost.remove(); ghost = null; }
+      try { host.releasePointerCapture(e.pointerId); } catch (err) { }
+      const from = down; down = null;
+      const to = sqFromPoint(e.clientX, e.clientY);
+      if (from === null || to < 0) return;
+      if (from === to) {
+        /* نقرة: إذا في قطعة محدّدة سابقاً وهاد هدف قانوني → إنقل */
+        if (B.sel >= 0 && B.sel !== to) { tryMove(B.sel, to); return; }
+        if (myTurnPiece(to)) { selectSq(to); return; }
+        clearSel(); return;
+      }
+      if (myTurnPiece(from)) { tryMove(from, to); return; }
+      if (B.sel >= 0) tryMove(B.sel, to);
+    });
+
+    host.addEventListener('pointercancel', function () {
+      if (ghost) { ghost.remove(); ghost = null; }
+      down = null;
+    });
+
+    return B;
+  }
+
+  /* ===================== الرسم البياني ===================== */
+  function fitCanvas(cv, h) {
+    const dpr = window.devicePixelRatio || 1;
+    const w = cv.parentElement.clientWidth || 300;
+    cv.width = Math.max(10, Math.round(w * dpr));
+    cv.height = Math.round((h || 170) * dpr);
+    const ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: h || 170 };
+  }
+  function drawEloChart(curve) {
+    const cv = $('#elo-chart'); if (!cv) return;
+    const g = fitCanvas(cv, 170), ctx = g.ctx, W = g.w, H = g.h;
+    ctx.clearRect(0, 0, W, H);
+    const pts = (curve || []).slice(-40);
+    if (pts.length < 2) {
+      ctx.fillStyle = '#6d8099'; ctx.font = '13px Cairo, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('إلعب مباراة أو تنتين وبيبين الرسم هون', W / 2, H / 2);
+      return;
+    }
+    const vals = pts.map(function (p) { return p.elo; });
+    let mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+    if (mx - mn < 80) { const c = (mx + mn) / 2; mn = c - 40; mx = c + 40; }
+    const pad = { l: 38, r: 10, t: 12, b: 20 };
+    const px = function (i) { return pad.l + (W - pad.l - pad.r) * (i / (pts.length - 1)); };
+    const py = function (v) { return pad.t + (H - pad.t - pad.b) * (1 - (v - mn) / (mx - mn)); };
+    ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1;
+    ctx.fillStyle = '#6d8099'; ctx.font = '10px Cairo, sans-serif'; ctx.textAlign = 'right';
+    for (let i = 0; i <= 3; i++) {
+      const v = mn + (mx - mn) * i / 3, y = py(v);
+      ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+      ctx.fillText(Math.round(v), pad.l - 6, y + 3);
+    }
+    const grd = ctx.createLinearGradient(0, pad.t, 0, H - pad.b);
+    grd.addColorStop(0, 'rgba(224,180,76,.35)'); grd.addColorStop(1, 'rgba(224,180,76,0)');
+    ctx.beginPath(); ctx.moveTo(px(0), py(vals[0]));
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(px(i), py(vals[i]));
+    ctx.lineTo(px(pts.length - 1), H - pad.b); ctx.lineTo(px(0), H - pad.b); ctx.closePath();
+    ctx.fillStyle = grd; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(px(0), py(vals[0]));
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(px(i), py(vals[i]));
+    ctx.strokeStyle = '#e0b44c'; ctx.lineWidth = 2.2; ctx.lineJoin = 'round'; ctx.stroke();
+    for (let i = 0; i < pts.length; i++) {
+      ctx.beginPath(); ctx.arc(px(i), py(vals[i]), i === pts.length - 1 ? 4 : 2.2, 0, 7);
+      ctx.fillStyle = i === pts.length - 1 ? '#fff0c4' : '#e0b44c'; ctx.fill();
+    }
+  }
+  function drawRing(acc) {
+    const cv = $('#acc-ring'); if (!cv) return;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = 118 * dpr; cv.height = 118 * dpr;
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, 118, 118);
+    const cx = 59, cy = 59, r = 48;
+    ctx.lineWidth = 11; ctx.lineCap = 'round';
+    ctx.strokeStyle = '#1b2433';
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+    const col = acc >= 85 ? '#3fb97f' : acc >= 70 ? '#e0b44c' : acc >= 55 ? '#f0a05a' : '#e3564f';
+    ctx.strokeStyle = col;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(0.02, acc / 100));
+    ctx.stroke();
+  }
+
+  /* ===================== الحالة العامة ===================== */
+  let ACC = null;                /* الحساب الحالي */
+  let GB = null, LB = null, DB = null, RB = null;   /* الرقع */
+  const G = {                    /* حالة المباراة */
+    pos: null, flip: false, myColor: 1, lvl: null, hist: [], sans: [], reps: {},
+    myMoves: [], over: true, busy: false, last: null, clock: null, timer: null,
+    mode: 'session', rated: true, startedAt: null, pendingIdx: -1, lastEval: 0
+  };
+  let DRILL = null;
+
+  const P = function () { return ACC.profile; };
+  function save() {
+    ACC.profile.lastActive = nowISO();
+    if (!S.put(ACC)) toast('ما قدرت أحفظ على الجهاز (التخزين ممتلئ أو مقفول)', 'bad', 5000);
+  }
+
+  /* ===================== التنقّل ===================== */
+  function show(id) {
+    $$('.screen').forEach(function (s) { s.classList.add('hide'); });
+    const el = $('#scr-' + id);
+    if (el) el.classList.remove('hide');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id === 'home') { renderHome(); }
+  }
+
+  /* ===================== شاشة الدخول ===================== */
+  let authMode = 'login';
+  function renderAuthAccounts() {
+    const list = S.list();
+    const box = $('#acct-list');
+    if (!list.length) {
+      box.innerHTML = '<p class="sub">ما في حسابات محفوظة بعد. إعمل حساب جديد أو إستورد ملف <span class="kbd">.rilex</span>.</p>';
+      return;
+    }
+    box.innerHTML = list.map(function (a) {
+      return '<div class="acct" data-u="' + esc(a.username) + '"><div><div class="nm">👤 ' + esc(a.username) + '</div>' +
+        '<div class="me">Elo ' + a.elo + ' · ' + a.games + ' مباريات · آخر نشاط ' + fmtDate(a.lastActive) + '</div></div>' +
+        '<span class="pill">دخول</span></div>';
+    }).join('');
+    $$('#acct-list .acct').forEach(function (d) {
+      d.onclick = function () {
+        authMode = 'login'; setAuthTab('login');
+        $('#au-user').value = d.dataset.u; $('#au-pass').focus();
+      };
+    });
+  }
+  function setAuthTab(t) {
+    authMode = t;
+    $$('#auth-tabs button').forEach(function (b) { b.classList.toggle('on', b.dataset.t === t); });
+    $('#reg-extra').classList.toggle('hide', t !== 'reg');
+    $('#au-go').textContent = t === 'reg' ? 'إنشاء الحساب' : 'دخول';
+    $('#auth-msg').innerHTML = '';
+  }
+  function authMsg(html, cls) { $('#auth-msg').innerHTML = '<div class="' + (cls || 'err') + '">' + md(html) + '</div>'; }
+
+  async function doAuth(ev) {
+    if (ev) ev.preventDefault();
+    const u = $('#au-user').value.trim(), pw = $('#au-pass').value;
+    if (!u || u.length < 2) return authMsg('اسم المستخدم لازم حرفين على الأقل.');
+    if (!/^[\w؀-ۿ .\-]{2,24}$/.test(u)) return authMsg('اسم المستخدم فيه رموز غير مسموحة.');
+    if (!pw || pw.length < 4) return authMsg('كلمة السر لازم ٤ حروف على الأقل.');
+    const btn = $('#au-go'); btn.disabled = true;
+    try {
+      if (authMode === 'reg') {
+        if (pw !== $('#au-pass2').value) { authMsg('كلمتا السر ما بتتطابقان.'); return; }
+        if (S.get(u)) { authMsg('في حساب بهذا الاسم على الجهاز. إختار اسم تاني أو إدخل عليه.'); return; }
+        think('عم نشفّر كلمة السر…'); await nextFrame();
+        const h = await X.hashPassword(pw);
+        let elo = parseInt($('#au-elo').value, 10); if (!isFinite(elo)) elo = 800;
+        elo = Math.max(400, Math.min(2600, elo));
+        ACC = { version: 1, username: u, passwordHash: h, profile: S.blankProfile(elo) };
+        save();
+        toast('تم إنشاء حساب **' + u + '**. أهلاً بيك!', 'good');
+        enterApp();
+      } else {
+        const a = S.get(u);
+        if (!a) { authMsg('ما في حساب بهذا الاسم على هذا الجهاز. إذا جايي من جهاز تاني، استخدم **استيراد حساب**.'); return; }
+        think('عم نتحقّق…'); await nextFrame();
+        const ok = await X.verifyPassword(pw, a.passwordHash);
+        if (!ok) { authMsg('كلمة السر غلط.'); return; }
+        ACC = a; S.setLastUser(u);
+        enterApp();
+      }
+    } catch (e) {
+      authMsg('صار خطأ: ' + (e && e.message ? e.message : e));
+    } finally { unthink(); btn.disabled = false; $('#au-pass').value = ''; if ($('#au-pass2')) $('#au-pass2').value = ''; }
+  }
+
+  function enterApp() {
+    $('#topbar').classList.remove('hide');
+    migrate(ACC.profile);
+    show('home');
+    renderSettings();
+  }
+  function migrate(pr) {              /* ضمان وجود كل الحقول بالحسابات القديمة أو المستوردة */
+    const b = S.blankProfile(pr.elo || 800);
+    Object.keys(b).forEach(function (k) { if (pr[k] === undefined || pr[k] === null) pr[k] = b[k]; });
+    if (!Array.isArray(pr.eloCurve) || !pr.eloCurve.length) pr.eloCurve = [{ t: nowISO(), elo: pr.elo }];
+    if (!Array.isArray(pr.history)) pr.history = [];
+    if (!Array.isArray(pr.drillBank)) pr.drillBank = [];
+    if (typeof pr.weaknesses !== 'object' || !pr.weaknesses) pr.weaknesses = {};
+  }
+
+  /* ===================== الرئيسية ===================== */
+  function renderHome() {
+    if (!ACC) return;
+    const pr = P();
+    $('#chip-elo').innerHTML = 'Elo <b>' + pr.elo + '</b>';
+    $('#chip-user').innerHTML = '👤 <b>' + esc(ACC.username) + '</b>';
+    $('#st-elo').textContent = pr.elo;
+    $('#st-peak').textContent = pr.peakElo;
+    $('#st-games').textContent = pr.gamesPlayed;
+    const accs = pr.history.map(function (h) { return h.accuracy; }).filter(function (x) { return typeof x === 'number'; });
+    $('#st-acc').textContent = accs.length ? (Math.round(accs.reduce(function (a, b) { return a + b; }, 0) / accs.length * 10) / 10) + '%' : '—';
+    $('#st-band').textContent = K.band(pr.elo);
+    $('#st-wld').innerHTML = 'فوز <b style="color:var(--emer)">' + pr.wins + '</b> · خسارة <b style="color:var(--red)">' + pr.losses + '</b> · تعادل <b>' + pr.draws + '</b>';
+    $('#st-dsolv').textContent = pr.drillsSolved;
+    $('#st-less').textContent = pr.lessonsDone;
+
+    const pct = Math.max(0, Math.min(100, (pr.elo - 400) / (2500 - 400) * 100));
+    $('#gm-bar').style.width = pct.toFixed(1) + '%';
+    $('#gm-left').textContent = pr.elo >= 2500 ? 'وصلت! 🏆' : 'باقي ' + (2500 - pr.elo) + ' نقطة (' + pct.toFixed(0) + '%)';
+
+    /* كلام الكوتش */
+    const tops = K.topWeaknesses(pr.weaknesses, 1);
+    let msg;
+    if (!pr.gamesPlayed) {
+      msg = 'أهلاً **' + ACC.username + '**! أنا **RILEX** — كوتشك. خطّتنا: درس قصير على قياس ضعفك، تمرين، مباراة اختبار، وبعدها تحليل كل نقلة وتحديث إيلوك. هدفنا **2500 (Grandmaster)**.\n\nإيلوك التقديري هلق **' + pr.elo + '**. إذا بتعرف مستواك الحقيقي عدّله من الإعدادات، وبعدها إضغط **ابدأ جلسة تدريب**.';
+    } else {
+      const last = pr.history[pr.history.length - 1];
+      const lw = tops.length ? K.WEAK[tops[0].key] : null;
+      msg = 'رجعنا يا **' + ACC.username + '**. آخر مباراة: ' +
+        (last.result === 'win' ? 'فوز 💪' : last.result === 'loss' ? 'خسارة' : 'تعادل') +
+        ' ضدّ مستوى **' + last.oppElo + '** بدقّة **' + last.accuracy + '%** و' + (last.delta >= 0 ? '+' : '') + last.delta + ' إيلو.\n\n' +
+        (lw ? 'نقطة ضعفك الأولى هلق: **' + lw.ar + ' (' + lw.en + ')** — ودرس اليوم عليها بالضبط. ' : '') +
+        K.motivate(pr.elo, last.result);
+    }
+    $('#home-coach').innerHTML = md(msg).replace(/\n/g, '<br>');
+
+    /* نقاط الضعف */
+    const wk = K.topWeaknesses(pr.weaknesses, 4);
+    if (!wk.length) $('#weak-box').innerHTML = '<p class="sub">بعد أول مباراة رح أحدّد ضعفك بالضبط.</p>';
+    else {
+      const mx = wk[0].n;
+      $('#weak-box').innerHTML = wk.map(function (w) {
+        const i = K.WEAK[w.key] || { ar: w.key, en: '', icon: '•' };
+        return '<div class="wk"><div class="top"><span>' + i.icon + ' ' + i.ar + ' <span style="color:var(--dim2);font-size:11.5px">(' + i.en + ')</span></span><span>' + w.n + '</span></div>' +
+          '<div class="bar"><i style="width:' + Math.round(w.n / mx * 100) + '%"></i></div></div>';
+      }).join('');
+    }
+
+    /* السجل */
+    const h = pr.history.slice(-8).reverse();
+    if (!h.length) $('#hist-box').innerHTML = '<p class="sub">لسّا ما لعبت مباريات.</p>';
+    else {
+      $('#hist-box').innerHTML = '<div style="overflow:auto"><table class="tbl"><tr><th>التاريخ</th><th>النتيجة</th><th>مستوى الخصم</th><th>دقّة</th><th>Blunders</th><th>Elo</th></tr>' +
+        h.map(function (g) {
+          const tg = g.result === 'win' ? '<span class="tag w">فوز</span>' : g.result === 'loss' ? '<span class="tag l">خسارة</span>' : '<span class="tag d">تعادل</span>';
+          return '<tr><td>' + fmtDate(g.date) + '</td><td>' + tg + '</td><td>' + g.oppElo + '</td><td>' + g.accuracy + '%</td><td>' + g.blunders + '</td><td>' +
+            g.eloAfter + ' <span dir="ltr" style="color:' + (g.delta >= 0 ? 'var(--emer)' : 'var(--red)') + '">(' + (g.delta >= 0 ? '+' : '\u2212') + Math.abs(g.delta) + ')</span></td></tr>';
+        }).join('') + '</table></div>';
+    }
+    drawEloChart(pr.eloCurve);
+  }
+
+  /* ===================== الدرس ===================== */
+  function startSession() {
+    const pr = P();
+    const L = K.makeLesson(pr);
+    pr.currentLesson = { key: L.key, variant: L.variant, at: nowISO() };
+    pr.lastLessonKey = L.key;
+    pr.lessonRotate[L.key] = (pr.lessonRotate[L.key] || 0) + 1;
+    save();
+    G.mode = 'session';
+    renderLesson(L);
+    show('lesson');
+  }
+  let CURLESSON = null;
+  function renderLesson(L) {
+    CURLESSON = L;
+    $('#les-head').textContent = 'الدرس — ' + L.weak.ar;
+    $('#les-intro').innerHTML = L.intro.map(function (x) { return md(x); }).join('<br><br>');
+    $('#les-title').textContent = L.title;
+    $('#les-rules').innerHTML = L.rules.map(function (r) { return '<li>' + md(r) + '</li>'; }).join('');
+    $('#les-see').innerHTML = md(L.see);
+    let p = null;
+    try { p = C.fromFEN(L.fen); } catch (e) { p = C.fromFEN(C.START_FEN); }
+    if (!LB) LB = Board('#les-board');
+    LB.set({ pos: p, flip: p.turn === -1, hl: L.hl, arrows: L.arrow ? [[L.arrow[0], L.arrow[1], '#e3564f']] : [], interactive: false, last: null, clearSel: true });
+    $('#les-turn').textContent = 'الدور على ' + (p.turn === 1 ? 'الأبيض' : 'الأسود') + ' — الوضعية للتوضيح فقط';
+  }
+
+  /* ===================== التمرين ===================== */
+  async function startDrill() {
+    const pr = P();
+    const L = CURLESSON || K.makeLesson(pr);
+    const d = K.makeDrill(pr, L);
+    show('drill');
+    $('#drill-fb').innerHTML = '';
+    $('#drill-hint').innerHTML = md(d.hint);
+    let p;
+    try { p = C.fromFEN(d.fen); } catch (e) { toast('وضعية التمرين تالفة، منجرّب غيرها', 'bad'); return startDrill(); }
+    if (!DB) DB = Board('#drill-board');
+    DRILL = { pos: p, fen: d.fen, source: d.source, solved: false, tries: 0, best: null, bestScore: 0 };
+    DB.set({ pos: p, flip: p.turn === -1, interactive: false, hl: [], arrows: [], last: null, clearSel: true });
+    $('#drill-turn').textContent = 'الدور على ' + (p.turn === 1 ? 'الأبيض' : 'الأسود') + ' — لاقي أفضل نقلة';
+    $('#dr-s').textContent = pr.drillsSolved; $('#dr-t').textContent = pr.drillsTried;
+
+    think('RILEX عم يحسب الحل…'); await nextFrame();
+    try {
+      const r = E.searchBest(C.fromFEN(d.fen), 4, 2200);
+      DRILL.best = r.move; DRILL.bestScore = r.score;
+    } catch (e) { console.warn(e); }
+    unthink();
+    DB.set({ interactive: true, onMove: onDrillMove });
+  }
+
+  async function onDrillMove(m) {
+    if (!DRILL || DRILL.solved) return;
+    const pr = P();
+    DRILL.tries++;
+    const p0 = C.fromFEN(DRILL.fen);
+    think('عم نقيّم نقلتك…'); await nextFrame();
+    let an = null;
+    try { an = E.analyzeMove(p0, C.findByUci(p0, C.uci(m)), 4, 2200); } catch (e) { console.warn(e); }
+    unthink();
+    const san = C.toSAN(C.fromFEN(DRILL.fen), m);
+    const loss = an ? an.cpLoss : 0;
+    const bestSan = DRILL.best ? C.toSAN(C.fromFEN(DRILL.fen), DRILL.best) : '—';
+    if (DRILL.tries === 1) { pr.drillsTried++; }
+    if (loss <= 30) {
+      DRILL.solved = true;
+      pr.drillsSolved++;
+      save();
+      $('#drill-fb').innerHTML = '<div class="ok">✅ <b>صحّ!</b> ' + esc(san) + ' هي النقلة الصحّ. ' +
+        (DRILL.bestScore > 20000 ? 'هاد مات (mate)!' : 'هيك بالضبط يفكّر المحرك.') + '</div>';
+      const pp = C.fromFEN(DRILL.fen);
+      C.makeMove(pp, m);
+      DB.set({ pos: pp, interactive: false, last: { from: m.from, to: m.to }, arrows: [] });
+      toast('تمرين محلول 💪', 'good');
+    } else {
+      $('#drill-fb').innerHTML = '<div class="err">❌ ' + esc(san) + ' مش الأفضل — خسّرت ' +
+        (Math.round(loss / 100 * 10) / 10) + ' باون. ' + (DRILL.tries >= 2 ? 'الأفضل كان <b>' + esc(bestSan) + '</b>.' : 'جرّب كمان مرّة — فكّر بـ CCT: كش، أكل، تهديد.') + '</div>';
+      save();
+      if (DRILL.tries >= 2 && DRILL.best) {
+        DB.set({ arrows: [[C.sqName(DRILL.best.from), C.sqName(DRILL.best.to), '#3fb97f']], clearSel: true });
+      } else DB.set({ clearSel: true });
+    }
+    $('#dr-s').textContent = pr.drillsSolved; $('#dr-t').textContent = pr.drillsTried;
+  }
+
+  function showDrillSolution() {
+    if (!DRILL || !DRILL.best) return;
+    const bestSan = C.toSAN(C.fromFEN(DRILL.fen), DRILL.best);
+    $('#drill-fb').innerHTML = '<div class="ok">💡 الحل: <b>' + esc(bestSan) + '</b>. ' +
+      (DRILL.bestScore > 20000 ? 'مات!' : 'هاي النقلة اللي بتربح أكثر شي.') + '</div>';
+    DB.set({ arrows: [[C.sqName(DRILL.best.from), C.sqName(DRILL.best.to), '#3fb97f']], clearSel: true });
+  }
+
+  /* ===================== المباراة ===================== */
+  function levelNow() {
+    const pr = P();
+    if (pr.levelMode === 'manual') return E.LEVELS[Math.max(0, Math.min(E.LEVELS.length - 1, pr.manualLevel - 1))];
+    return E.levelForElo(pr.elo);
+  }
+  function analysisDepth() {
+    const lv = G.lvl ? G.lvl.depth : 3;
+    return Math.max(3, Math.min(4, lv - 1));
+  }
+
+  function startGame(mode) {
+    const pr = P();
+    G.mode = mode || 'session';
+    G.pos = C.fromFEN(C.START_FEN);
+    G.lvl = levelNow();
+    G.hist = []; G.sans = []; G.reps = {}; G.myMoves = [];
+    G.over = false; G.busy = false; G.last = null; G.rated = true;
+    G.startedAt = nowISO(); G.pendingIdx = -1; G.lastEval = 0;
+    let col = pr.colorPref || 'w';
+    if (col === 'r') col = Math.random() < .5 ? 'w' : 'b';
+    G.myColor = col === 'b' ? -1 : 1;
+    G.flip = G.myColor === -1;
+    const per = (pr.clockMin || 0) * 60;
+    G.clock = per > 0 ? { me: per, opp: per, per: per } : null;
+
+    if (!GB) GB = Board('#game-board');
+    $('#game-head').textContent = (G.mode === 'quick' ? 'مباراة سريعة' : 'مباراة الاختبار') + ' — ' + G.lvl.name + ' (~' + G.lvl.elo + ')';
+    $('#clk-me-n').textContent = 'إنت (' + (G.myColor === 1 ? 'أبيض' : 'أسود') + ')';
+    $('#clk-opp-n').textContent = 'RILEX ' + G.lvl.name;
+    $('#game-feed').innerHTML = '';
+    $('#move-list').innerHTML = '';
+    feed('المباراة بلّشت ضدّ مستوى **' + G.lvl.name + ' (~' + G.lvl.elo + ' Elo)**. إنت بـ' + (G.myColor === 1 ? 'الأبيض' : 'الأسود') + '. ركّز على: ' +
+      (CURLESSON ? '**' + CURLESSON.weak.ar + '**' : 'التطوير وأمان الملك') + '.', 'info');
+    show('game');
+    renderGame();
+    startClock();
+    if (G.myColor === -1) engineMove();
+  }
+
+  function renderGame() {
+    GB.set({
+      pos: G.pos, flip: G.flip, last: G.last, arrows: G.arrowHint || [],
+      interactive: !G.over && !G.busy && G.pos.turn === G.myColor, onMove: onPlayerMove
+    });
+    updateEval(G.lastEval);
+    updateClockUI();
+  }
+
+  function feed(msg, cls) {
+    const d = document.createElement('div');
+    d.className = 'msg ' + (cls || '');
+    d.innerHTML = md(msg);
+    const f = $('#game-feed');
+    f.insertBefore(d, f.firstChild);
+    while (f.children.length > 40) f.removeChild(f.lastChild);
+  }
+
+  function updateEval(sc) {
+    /* sc من منظور الأبيض */
+    const p = 1 / (1 + Math.pow(10, -sc / 400));
+    $('#ev-fill').style.width = (p * 100).toFixed(1) + '%';
+    let t;
+    if (Math.abs(sc) > 20000) t = (sc > 0 ? '#' : '-#');
+    else t = (sc >= 0 ? '+' : '') + (sc / 100).toFixed(1);
+    $('#ev-txt').textContent = t;
+  }
+
+  function mmss(s) {
+    s = Math.max(0, Math.round(s));
+    const m = Math.floor(s / 60);
+    return m + ':' + String(s % 60).padStart(2, '0');
+  }
+  function updateClockUI() {
+    const me = $('#clk-me'), op = $('#clk-opp');
+    if (!G.clock) {
+      $('#clk-me .t').textContent = '∞'; $('#clk-opp .t').textContent = '∞';
+    } else {
+      $('#clk-me .t').textContent = mmss(G.clock.me);
+      $('#clk-opp .t').textContent = mmss(G.clock.opp);
+      me.classList.toggle('low', G.clock.me < 30);
+      op.classList.toggle('low', G.clock.opp < 30);
+    }
+    const mine = !G.over && G.pos && G.pos.turn === G.myColor;
+    me.classList.toggle('on', mine);
+    op.classList.toggle('on', !G.over && !mine);
+  }
+  function startClock() {
+    stopClock();
+    if (!G.clock) { updateClockUI(); return; }
+    let t0 = Date.now();
+    G.timer = setInterval(function () {
+      const dt = (Date.now() - t0) / 1000; t0 = Date.now();
+      if (G.over) return;
+      if (G.pos.turn === G.myColor) G.clock.me -= dt; else G.clock.opp -= dt;
+      if (G.clock.me <= 0) { G.clock.me = 0; endGame(G.myColor === 1 ? '0-1' : '1-0', 'انتهى وقتك (Time out)'); }
+      else if (G.clock.opp <= 0) { G.clock.opp = 0; endGame(G.myColor === 1 ? '1-0' : '0-1', 'وقت RILEX خلص (Time out)'); }
+      updateClockUI();
+    }, 250);
+  }
+  function stopClock() { if (G.timer) { clearInterval(G.timer); G.timer = null; } }
+
+  function pushMoveList() {
+    const box = $('#move-list');
+    box.innerHTML = '';
+    for (let i = 0; i < G.sans.length; i += 2) {
+      const n = document.createElement('div'); n.className = 'n'; n.textContent = (i / 2 + 1) + '.';
+      box.appendChild(n);
+      for (let j = 0; j < 2; j++) {
+        const s = G.sans[i + j];
+        const d = document.createElement('div');
+        d.className = 'm' + (s && s.cls ? ' ' + s.cls : '');
+        d.textContent = s ? s.san + (s.mark || '') : '';
+        if (!s) d.style.background = 'transparent';
+        box.appendChild(d);
+      }
+    }
+    box.scrollTop = box.scrollHeight;
+  }
+
+  async function onPlayerMove(m) {
+    if (G.over || G.busy || G.pos.turn !== G.myColor) return;
+    G.busy = true; G.arrowHint = null;
+    GB.set({ interactive: false });
+    think('RILEX عم يحلّل نقلتك…');
+    await nextFrame();
+
+    const fenBefore = C.toFEN(G.pos);
+    const moveNo = G.pos.full;
+    const phase = K.phaseOf(G.pos, moveNo);
+    const san = C.toSAN(G.pos, m);
+    let an = null;
+    try { an = E.analyzeMove(G.pos, m, analysisDepth(), 900); }
+    catch (e) { console.warn('تحليل فشل', e); }
+
+    const cpLoss = an ? an.cpLoss : 0;
+    const cl = K.classify(cpLoss, an ? an.isBest : true);
+    const bestSan = (an && an.best) ? C.toSAN(G.pos, an.best) : san;
+    const bestWasTactic = !!(an && an.best && (an.best.cap !== 0 || isCheckMove(G.pos, an.best)));
+
+    const rec = {
+      moveNo: moveNo, san: san, uci: C.uci(m), cls: cl.key, clsAr: cl.ar, cpLoss: cpLoss,
+      bestSan: bestSan, bestUci: an && an.best ? C.uci(an.best) : null, phase: phase,
+      pieceType: Math.abs(m.pc), flag: m.flag, fen: fenBefore, lostMaterial: 0,
+      bestWasTactic: bestWasTactic, kingExposed: kingExposedNow(G.pos, G.myColor, moveNo)
+    };
+    G.myMoves.push(rec);
+    G.pendingIdx = G.myMoves.length - 1;
+
+    /* بنك التمارين من أخطائك */
+    if (cpLoss >= 250 && an && an.best) {
+      const pr = P();
+      pr.drillBank.push({ fen: fenBefore, played: san, best: C.uci(an.best), cpLoss: cpLoss, at: nowISO() });
+      while (pr.drillBank.length > 12) pr.drillBank.shift();
+    }
+
+    applyMove(m, cl.cls, cl.icon === '★' ? '' : (cl.key === 'blunder' ? '??' : cl.key === 'mistake' ? '?' : cl.key === 'inacc' ? '?!' : ''));
+    /* نحوّل تقييم النقلة لمنظور الأبيض لشريط التقييم */
+    if (an) G.lastEval = G.myColor === 1 ? an.playedScore : -an.playedScore;
+
+    const cm = K.liveComment(rec);
+    if (cm) feed(cm, cl.key === 'blunder' || cl.key === 'mistake' ? 'bad' : cl.key === 'best' || cl.key === 'great' ? 'good' : '');
+
+    unthink();
+    const st = statusNow();
+    if (st.over) { endGame(st.result, reasonAr(st.reason)); G.busy = false; return; }
+    await engineMove();
+    G.busy = false;
+    renderGame();
+  }
+
+  function isCheckMove(p, m) {
+    const u = C.makeMove(p, m);
+    const ck = C.inCheck(p, p.turn);
+    C.unmakeMove(p, m, u);
+    return ck;
+  }
+  function kingExposedNow(p, col, moveNo) {
+    const ks = C.kingSq(p, col);
+    const f = ks & 15;
+    return moveNo >= 10 && f >= 3 && f <= 5;
+  }
+
+  function applyMove(m, cls, mark) {
+    const san = C.toSAN(G.pos, m);
+    G.sans.push({ san: san, cls: cls || '', mark: mark || '' });
+    G.hist.push(C.uci(m));
+    C.makeMove(G.pos, m);
+    const k = C.repKey(G.pos);
+    G.reps[k] = (G.reps[k] || 0) + 1;
+    G.last = { from: m.from, to: m.to };
+    pushMoveList();
+    renderGame();
+  }
+
+  function statusNow() { return C.status(G.pos, G.reps); }
+
+  async function engineMove() {
+    if (G.over) return;
+    think('RILEX عم يلعب…');
+    await nextFrame();
+    const t0 = Date.now();
+    let r = null;
+    try { r = E.pickMove(G.pos, G.lvl, G.hist); }
+    catch (e) { console.warn('المحرك فشل، منلعب نقلة قانونية', e); }
+    if (!r) {
+      const ms = C.legalMoves(G.pos, false);
+      if (!ms.length) { unthink(); const st = statusNow(); endGame(st.result, reasonAr(st.reason)); return; }
+      r = { move: ms[Math.floor(Math.random() * ms.length)], score: 0 };
+    }
+    const dt = Date.now() - t0;
+    if (dt < 320) await sleep(320 - dt);          /* إحساس طبيعي */
+    applyMove(r.move, '', '');
+    unthink();
+
+    /* هل أكل قطعة مجاناً بسبب غلطي؟ */
+    if (G.pendingIdx >= 0 && r.move.cap !== 0) {
+      const v = E.VAL[Math.abs(r.move.cap)];
+      const rec = G.myMoves[G.pendingIdx];
+      if (rec && rec.cpLoss >= 200 && v >= 250) rec.lostMaterial = v;
+    }
+    if (typeof r.score === 'number' && Math.abs(r.score) < 25000) {
+      G.lastEval = G.pos.turn === 1 ? -r.score : r.score;
+    }
+    const st = statusNow();
+    if (st.over) { endGame(st.result, reasonAr(st.reason)); return; }
+    if (st.check) feed('**كش (Check)!** ملكك مهدَّد — لازم تدافع أو تهرب أو تسدّ.', 'bad');
+    renderGame();
+  }
+
+  function reasonAr(r) {
+    return { checkmate: 'كش مات (Checkmate)', stalemate: 'تعادل بالحصر (Stalemate)', fifty: 'تعادل بقاعدة ٥٠ نقلة', material: 'تعادل — مواد غير كافية', repetition: 'تعادل بتكرار الوضعية ٣ مرّات' }[r] || r || '';
+  }
+
+  /* ===================== نهاية المباراة والتقرير ===================== */
+  function endGame(result, reason) {
+    if (G.over) return;
+    G.over = true;
+    stopClock();
+    unthink();
+    GB.set({ interactive: false });
+    const myRes = result === '1/2-1/2' ? 'draw' : ((result === '1-0') === (G.myColor === 1) ? 'win' : 'loss');
+    const pr = P();
+    const rev = K.review({ myMoves: G.myMoves, result: myRes, oppElo: G.lvl.elo }, pr);
+
+    /* نقاط الضعف */
+    const det = K.detect(G.myMoves, G.pos, G.myColor);
+    Object.keys(det).forEach(function (k) { pr.weaknesses[k] = (pr.weaknesses[k] || 0) + det[k]; });
+    /* تهدئة: ننقّص بالتدريج حتى الضعف القديم ما يسيطر للأبد */
+    Object.keys(pr.weaknesses).forEach(function (k) {
+      if (!det[k]) pr.weaknesses[k] = Math.max(0, pr.weaknesses[k] - 0.5);
+      if (pr.weaknesses[k] <= 0) delete pr.weaknesses[k];
+      else pr.weaknesses[k] = Math.round(pr.weaknesses[k] * 10) / 10;
+    });
+
+    const score = myRes === 'win' ? 1 : myRes === 'draw' ? 0.5 : 0;
+    const eloBefore = pr.elo;
+    let delta = 0;
+    const tooShort = G.myMoves.length < 4;
+    G.rateReason = !G.rated ? 'غير محسوبة (استخدمت التراجع)' : tooShort ? 'غير محسوبة (المباراة قصيرة جداً)' : '';
+    if (G.rated && !tooShort) {
+      const ec = K.eloChange(pr.elo, G.lvl.elo, score, pr.gamesPlayed);
+      delta = ec.delta;
+      pr.elo = Math.max(100, Math.min(3000, pr.elo + delta));
+      if (pr.elo > pr.peakElo) pr.peakElo = pr.elo;
+      pr.gamesPlayed++;
+      if (myRes === 'win') pr.wins++; else if (myRes === 'loss') pr.losses++; else pr.draws++;
+      pr.eloCurve.push({ t: nowISO(), elo: pr.elo });
+      while (pr.eloCurve.length > 200) pr.eloCurve.shift();
+    }
+    if (G.mode === 'session') pr.lessonsDone++;
+    pr.history.push({
+      date: nowISO(), result: myRes, reason: reason, oppElo: G.lvl.elo, oppLevel: G.lvl.id,
+      accuracy: rev.accuracy, blunders: rev.counts.blunder || 0, mistakes: rev.counts.mistake || 0,
+      best: (rev.counts.best || 0) + (rev.counts.great || 0),
+      eloBefore: eloBefore, eloAfter: pr.elo, delta: delta, moves: G.myMoves.length,
+      color: G.myColor === 1 ? 'w' : 'b', rated: G.rated && !tooShort,
+      worst: rev.worst ? { moveNo: rev.worst.moveNo, san: rev.worst.san, bestSan: rev.worst.bestSan, cpLoss: rev.worst.cpLoss, fen: rev.worst.fen, bestUci: rev.worst.bestUci } : null
+    });
+    while (pr.history.length > 120) pr.history.shift();
+    save();
+    G.ratedFinal = !G.rateReason;
+    renderReport(myRes, reason, rev, eloBefore, delta);
+    show('report');
+  }
+
+  function renderReport(myRes, reason, rev, eloBefore, delta) {
+    const pr = P();
+    const cls = myRes === 'win' ? 'win' : myRes === 'loss' ? 'loss' : 'draw';
+    const label = myRes === 'win' ? '🏆 فوز!' : myRes === 'loss' ? '😤 خسارة' : '🤝 تعادل';
+    $('#rp-banner').innerHTML =
+      '<div class="big ' + cls + '">' + label + '</div>' +
+      '<div class="sub">' + esc(reason || '') + ' · ضدّ RILEX مستوى <b>' + G.lvl.name + ' (~' + G.lvl.elo + ')</b></div>' +
+      '<div class="delta ' + cls + '">' + eloBefore + ' → <b>' + pr.elo + '</b> (' + (delta >= 0 ? '+' : '\u2212') + Math.abs(delta) + ' Elo)' +
+      (G.rateReason ? ' <span class="pill">' + esc(G.rateReason) + '</span>' : '') + '</div>' +
+      '<div class="sub" style="margin-top:6px">' + esc(K.band(pr.elo)) + ' · باقي ' + Math.max(0, 2500 - pr.elo) + ' نقطة للـ GM</div>';
+
+    $('#acc-v').textContent = rev.accuracy + '%';
+    drawRing(rev.accuracy);
+    $('#rp-best').textContent = (rev.counts.best || 0) + (rev.counts.great || 0);
+    $('#rp-mist').textContent = rev.counts.mistake || 0;
+    $('#rp-blun').textContent = rev.counts.blunder || 0;
+    $('#rp-good').innerHTML = rev.good.map(function (x) { return '<li>' + md(x) + '</li>'; }).join('') || '<li>—</li>';
+    $('#rp-bad').innerHTML = rev.bad.length ? rev.bad.map(function (x) { return '<li>' + md(x) + '</li>'; }).join('') : '<li>ما في أخطاء كبيرة بهالمباراة. ممتاز.</li>';
+    $('#rp-next').innerHTML = rev.next.map(function (x) { return '<li>' + md(x) + '</li>'; }).join('');
+
+    /* جدول النقلات */
+    let t = '<tr><th>#</th><th>نقلتك</th><th>التصنيف</th><th>الخسارة</th><th>الأفضل</th><th>المرحلة</th></tr>';
+    G.myMoves.forEach(function (m) {
+      const c = K.CLASSES[m.cls];
+      t += '<tr><td>' + m.moveNo + '</td><td style="direction:ltr;font-weight:700">' + esc(m.san) + '</td>' +
+        '<td class="' + c.cls + '">' + c.ar + '</td><td class="num">' + (m.cpLoss ? '\u2212' + (Math.round(m.cpLoss / 100 * 10) / 10) : '0') + '</td>' +
+        '<td style="direction:ltr">' + esc(m.bestSan) + '</td><td style="font-size:12px;color:var(--dim2)">' + K.PHASE_AR[m.phase] + '</td></tr>';
+    });
+    $('#rp-table').innerHTML = t;
+
+    /* أسوأ نقلة على رقعة */
+    const w = rev.worst;
+    if (w && w.cpLoss >= 100 && w.fen) {
+      $('#rp-worst-card').classList.remove('hide');
+      let p;
+      try { p = C.fromFEN(w.fen); } catch (e) { p = C.fromFEN(C.START_FEN); }
+      if (!RB) RB = Board('#rp-board');
+      const arrows = [];
+      if (w.bestUci) arrows.push([w.bestUci.slice(0, 2), w.bestUci.slice(2, 4), '#3fb97f']);
+      if (w.uci) arrows.push([w.uci.slice(0, 2), w.uci.slice(2, 4), '#e3564f']);
+      RB.set({ pos: p, flip: G.myColor === -1, arrows: arrows, interactive: false, last: null, clearSel: true });
+      $('#rp-worst-txt').innerHTML = 'النقلة <b>' + w.moveNo + '. ' + esc(w.san) + '</b> (أحمر) — الأفضل كان <b style="color:var(--emer)">' + esc(w.bestSan) + '</b> (أخضر).';
+    } else {
+      $('#rp-worst-card').classList.add('hide');
+    }
+  }
+
+  /* ===================== الإعدادات ===================== */
+  function renderSettings() {
+    if (!ACC) return;
+    const pr = P();
+    $('#se-elo').value = pr.elo;
+    $('#se-mode').value = pr.levelMode || 'auto';
+    $('#se-clock').value = String(pr.clockMin || 0);
+    $('#se-color').value = pr.colorPref || 'w';
+    const sel = $('#se-lvl');
+    sel.innerHTML = E.LEVELS.map(function (l) {
+      return '<option value="' + l.id + '">' + l.id + ' — ' + l.name + ' (~' + l.elo + ' Elo، عمق ' + l.depth + ')</option>';
+    }).join('');
+    sel.value = String(pr.manualLevel || 4);
+    $('#se-lvl-wrap').classList.toggle('hide', (pr.levelMode || 'auto') !== 'manual');
+    const list = S.list();
+    $('#set-accts').innerHTML = list.map(function (a) {
+      const me = a.username === ACC.username;
+      return '<div class="acct"><div><div class="nm">👤 ' + esc(a.username) + (me ? ' <span class="pill">الحالي</span>' : '') + '</div>' +
+        '<div class="me">Elo ' + a.elo + ' · ' + a.games + ' مباريات</div></div>' +
+        (me ? '' : '<button class="btn ghost sm" data-sw="' + esc(a.username) + '">تبديل</button>') + '</div>';
+    }).join('');
+    $$('#set-accts button[data-sw]').forEach(function (b) {
+      b.onclick = function () { logout(b.dataset.sw); };
+    });
+    $('#foot-ver').textContent = 'v' + VERSION + ' · ' + (X.available ? 'تشفير مفعّل 🔐' : '⚠️ Web Crypto غير متاح');
+  }
+
+  function saveSettings() {
+    const pr = P();
+    let e = parseInt($('#se-elo').value, 10);
+    if (!isFinite(e)) e = pr.elo;
+    e = Math.max(100, Math.min(3000, e));
+    if (e !== pr.elo) {
+      pr.elo = e;
+      if (e > pr.peakElo) pr.peakElo = e;
+      pr.eloCurve.push({ t: nowISO(), elo: e });
+    }
+    pr.levelMode = $('#se-mode').value;
+    pr.manualLevel = parseInt($('#se-lvl').value, 10) || 4;
+    pr.clockMin = parseInt($('#se-clock').value, 10) || 0;
+    pr.colorPref = $('#se-color').value;
+    save();
+    $('#set-msg').innerHTML = '<div class="ok">✅ تم الحفظ. مستوى المحرك الحالي: <b>' + levelNow().name + ' (~' + levelNow().elo + ')</b></div>';
+    renderHome();
+    toast('الإعدادات محفوظة', 'good');
+  }
+
+  /* ===================== التصدير / الاستيراد ===================== */
+  async function doExport() {
+    try {
+      if (!X.available) { toast('Web Crypto غير متاح بهذا المتصفح/السياق', 'bad', 5000); return; }
+      const pass = await askText({
+        title: '🔐 تصدير حسابي', msg: 'إختار **كلمة سر تشفير** للملف. رح تحتاجها بالجهاز التاني لفكّ التشفير.\n\n**ما تنساها — ما في طريقة لاستعادتها.**',
+        label: 'كلمة سر التشفير (٤ حروف على الأقل)', ok: 'تشفير وتنزيل'
+      });
+      if (!pass) return;
+      const pass2 = await askText({ title: '🔐 تأكيد', msg: 'أعد كتابة كلمة سر التشفير.', label: 'تأكيد كلمة السر', ok: 'تأكيد' });
+      if (!pass2) return;
+      if (pass !== pass2) { toast('كلمتا السر ما بتتطابقان', 'bad'); return; }
+      think('عم نشفّر البيانات…'); await nextFrame();
+      const payload = JSON.parse(JSON.stringify(ACC));
+      const file = await X.encryptPayload(payload, pass);
+      const blob = new Blob([JSON.stringify(file, null, 1)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'rilex-backup-' + ACC.username.replace(/[^\w؀-ۿ-]/g, '_') + '.rilex';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      $('#io-msg').innerHTML = '<div class="ok">✅ تم التصدير: <span class="kbd">' + esc(a.download) + '</span><br>مشفّر AES-GCM 256 · PBKDF2-SHA256 (' + file.kdf.iterations.toLocaleString('en') + ' تكرار) · salt و IV عشوائيين.</div>';
+      toast('تم تنزيل النسخة المشفّرة', 'good');
+    } catch (e) {
+      $('#io-msg').innerHTML = '<div class="err">❌ فشل التصدير: ' + esc(e.message || e) + '</div>';
+    } finally { unthink(); }
+  }
+
+  function pickFile() {
+    return new Promise(function (res) {
+      const inp = $('#file-in');
+      inp.value = '';
+      inp.onchange = function () { res(inp.files && inp.files[0] ? inp.files[0] : null); };
+      inp.click();
+    });
+  }
+
+  async function doImport() {
+    const msgBox = ACC ? $('#io-msg') : $('#auth-msg');
+    try {
+      if (!X.available) { toast('Web Crypto غير متاح بهذا المتصفح/السياق', 'bad', 5000); return; }
+      const f = await pickFile();
+      if (!f) return;
+      if (f.size > 4 * 1024 * 1024) throw new Error('الملف كبير بشكل غير منطقي.');
+      const txt = await f.text();
+      let obj;
+      try { obj = JSON.parse(txt); }
+      catch (e) { throw new Error('الملف مش JSON صالح — تأكّد إنّه ملف .rilex مصدّر من التطبيق.'); }
+      const pass = await askText({ title: '📥 استيراد حساب', msg: 'إدخل **كلمة سر التشفير** اللي استعملتها وقت التصدير.', label: 'كلمة سر التشفير', ok: 'فكّ التشفير' });
+      if (!pass) return;
+      think('عم نفكّ التشفير…'); await nextFrame();
+      const acct = await X.decryptPayload(obj, pass);
+      unthink();
+      if (!acct.username || !acct.profile || !acct.passwordHash) throw new Error('بيانات الحساب ناقصة بالملف.');
+      migrate(acct.profile);
+
+      const exists = S.get(acct.username);
+      if (exists) {
+        const ch = await choiceBox({
+          title: 'في حساب بنفس الاسم', msg: 'الحساب **' + acct.username + '** موجود على هذا الجهاز. شو بدّك تعمل؟',
+          options: [
+            { label: '🔀 دمج (أعلى إيلو + كل السجل) — يحفظ كلمة سر الجهاز', value: 'merge', cls: 'em' },
+            { label: '♻️ استبدال كامل بالملف (يشمل كلمة السر)', value: 'replace', cls: 'rd' },
+            { label: 'إلغاء', value: null }
+          ]
+        });
+        if (!ch) return;
+        if (ch === 'merge') {
+          const m = mergeAccounts(exists, acct);
+          S.put(m);
+          if (ACC && ACC.username === m.username) { ACC = m; }
+          toast('تم دمج الحساب ' + m.username, 'good');
+        } else {
+          S.put(acct);
+          if (ACC && ACC.username === acct.username) ACC = acct;
+          toast('تم استبدال الحساب ' + acct.username, 'good');
+        }
+      } else {
+        S.put(acct);
+        toast('تم استيراد الحساب **' + acct.username + '**. سجّل دخول بكلمة سر الحساب.', 'good', 5000);
+      }
+      if (msgBox) msgBox.innerHTML = '<div class="ok">✅ تم الاستيراد بنجاح: <b>' + esc(acct.username) + '</b> (Elo ' + acct.profile.elo + '، ' + acct.profile.gamesPlayed + ' مباريات).' +
+        (ACC ? '' : ' سجّل دخول بكلمة سر الحساب نفسها.') + '</div>';
+      renderAuthAccounts();
+      if (ACC) { renderSettings(); renderHome(); }
+    } catch (e) {
+      unthink();
+      if (msgBox) msgBox.innerHTML = '<div class="err">❌ ' + esc(e.message || e) + '</div>';
+      toast(e.message || 'فشل الاستيراد', 'bad', 5000);
+    }
+  }
+
+  function mergeAccounts(local, inc) {
+    const a = JSON.parse(JSON.stringify(local));
+    const pa = a.profile, pb = inc.profile;
+    pa.elo = Math.max(pa.elo, pb.elo);
+    pa.peakElo = Math.max(pa.peakElo || 0, pb.peakElo || 0, pa.elo);
+    pa.gamesPlayed = (pa.gamesPlayed || 0) + (pb.gamesPlayed || 0);
+    pa.wins = (pa.wins || 0) + (pb.wins || 0);
+    pa.losses = (pa.losses || 0) + (pb.losses || 0);
+    pa.draws = (pa.draws || 0) + (pb.draws || 0);
+    pa.lessonsDone = (pa.lessonsDone || 0) + (pb.lessonsDone || 0);
+    pa.drillsSolved = (pa.drillsSolved || 0) + (pb.drillsSolved || 0);
+    pa.drillsTried = (pa.drillsTried || 0) + (pb.drillsTried || 0);
+    Object.keys(pb.weaknesses || {}).forEach(function (k) { pa.weaknesses[k] = (pa.weaknesses[k] || 0) + pb.weaknesses[k]; });
+    const seen = {};
+    pa.history = (pa.history || []).concat(pb.history || []).filter(function (h) {
+      const k = h.date + '|' + h.result + '|' + h.oppElo;
+      if (seen[k]) return false; seen[k] = 1; return true;
+    }).sort(function (x, y) { return (x.date || '').localeCompare(y.date || ''); }).slice(-120);
+    pa.eloCurve = (pa.eloCurve || []).concat(pb.eloCurve || [])
+      .sort(function (x, y) { return (x.t || '').localeCompare(y.t || ''); }).slice(-200);
+    pa.drillBank = (pa.drillBank || []).concat(pb.drillBank || []).slice(-12);
+    pa.lastActive = nowISO();
+    return a;
+  }
+
+  /* ===================== حذف / خروج ===================== */
+  async function delAccount() {
+    const ok = await confirmBox({
+      title: '🗑️ حذف الحساب', danger: true, ok: 'إحذف نهائياً',
+      msg: 'رح يُمسح حساب **' + ACC.username + '** وكل بياناته من هذا الجهاز نهائياً.\n\nإذا ما عملت **تصدير** قبل، ما في طريقة استعادة.'
+    });
+    if (!ok) return;
+    const u = ACC.username;
+    S.remove(u);
+    ACC = null;
+    toast('تم حذف الحساب ' + u, 'bad');
+    logout();
+  }
+  async function resetStats() {
+    const ok = await confirmBox({ title: '♻️ تصفير الإحصائيات', danger: true, ok: 'صفّر', msg: 'رح نصفّر الإيلو والسجل ونقاط الضعف، بس الحساب يبقى.' });
+    if (!ok) return;
+    const el = P().elo;
+    ACC.profile = S.blankProfile(el);
+    save();
+    toast('تم التصفير', 'good');
+    renderHome(); renderSettings();
+  }
+  function logout(preUser) {
+    stopClock();
+    G.over = true;
+    ACC = null;
+    $('#topbar').classList.add('hide');
+    renderAuthAccounts();
+    setAuthTab('login');
+    $('#au-user').value = preUser || '';
+    $('#au-pass').value = '';
+    show('auth');
+    if (preUser) $('#au-pass').focus();
+  }
+
+  /* ===================== تلميح / تراجع / استسلام ===================== */
+  async function doHint() {
+    if (G.over || G.busy || G.pos.turn !== G.myColor) return;
+    G.busy = true; GB.set({ interactive: false });
+    think('RILEX عم يدوّر على أفضل نقلة…'); await nextFrame();
+    let r = null;
+    try { r = E.searchBest(G.pos, Math.max(3, analysisDepth()), 1500); } catch (e) { console.warn(e); }
+    unthink(); G.busy = false;
+    if (!r) { renderGame(); return; }
+    G.arrowHint = [[C.sqName(r.move.from), C.sqName(r.move.to), '#4b9fe1']];
+    renderGame();
+    feed('💡 تلميح: جرّب **' + C.toSAN(G.pos, r.move) + '**. (التلميح ما يأثّر على الإيلو، بس حاول تعتمد على حسابك)', 'info');
+  }
+  function doUndo() {
+    if (G.over || G.busy) return;
+    if (G.hist.length < 2) { toast('ما في نقلات ترجع عنها', 'bad'); return; }
+    /* نعيد بناء الوضعية من الصفر بعد شيل آخر نقلتين */
+    const keep = G.hist.slice(0, Math.max(0, G.hist.length - 2));
+    const pos = C.fromFEN(C.START_FEN);
+    const reps = {}; const sans = [];
+    for (let i = 0; i < keep.length; i++) {
+      const m = C.findByUci(pos, keep[i]);
+      if (!m) break;
+      sans.push({ san: C.toSAN(pos, m), cls: G.sans[i] ? G.sans[i].cls : '', mark: G.sans[i] ? G.sans[i].mark : '' });
+      C.makeMove(pos, m);
+      const k = C.repKey(pos); reps[k] = (reps[k] || 0) + 1;
+    }
+    G.pos = pos; G.hist = keep; G.sans = sans; G.reps = reps;
+    G.myMoves = G.myMoves.slice(0, Math.max(0, G.myMoves.length - 1));
+    G.pendingIdx = -1;
+    G.last = keep.length ? { from: C.nameSq(keep[keep.length - 1].slice(0, 2)), to: C.nameSq(keep[keep.length - 1].slice(2, 4)) } : null;
+    G.rated = false;
+    G.arrowHint = null;
+    pushMoveList(); renderGame();
+    feed('↩️ رجعت نقلة. **المباراة صارت غير محسوبة للإيلو** — التحليل بيضلّه شغّال.', 'info');
+  }
+  async function doResign() {
+    if (G.over) return;
+    const ok = await confirmBox({ title: '🏳️ استسلام', danger: true, ok: 'إستسلم', msg: 'متأكّد؟ رح تُحسب خسارة.' });
+    if (!ok) return;
+    endGame(G.myColor === 1 ? '0-1' : '1-0', 'استسلمت (Resignation)');
+  }
+
+  /* ===================== الربط ===================== */
+  function bind() {
+    $$('#auth-tabs button').forEach(function (b) { b.onclick = function () { setAuthTab(b.dataset.t); }; });
+    $('#auth-form').addEventListener('submit', doAuth);
+    $('#au-import').onclick = doImport;
+    $$('[data-nav]').forEach(function (b) {
+      b.onclick = function () {
+        const t = b.dataset.nav;
+        if (t === 'settings') renderSettings();
+        show(t);
+      };
+    });
+    $('#btn-logout').onclick = function () { logout(); };
+    $('#btn-session').onclick = startSession;
+    $('#btn-quick').onclick = function () { CURLESSON = null; startGame('quick'); };
+    $('#btn-drill-only').onclick = function () { CURLESSON = null; startDrill(); };
+    $('#btn-to-drill').onclick = startDrill;
+    $('#btn-to-game').onclick = function () { startGame('session'); };
+    $('#btn-drill-next').onclick = startDrill;
+    $('#btn-drill-show').onclick = showDrillSolution;
+    $('#btn-drill-done').onclick = function () { startGame(CURLESSON ? 'session' : 'quick'); };
+    $('#btn-flip').onclick = function () { G.flip = !G.flip; renderGame(); };
+    $('#btn-hint').onclick = doHint;
+    $('#btn-undo').onclick = doUndo;
+    $('#btn-resign').onclick = doResign;
+    $('#btn-next-session').onclick = startSession;
+    $('#btn-save-set').onclick = saveSettings;
+    $('#se-mode').onchange = function () { $('#se-lvl-wrap').classList.toggle('hide', $('#se-mode').value !== 'manual'); };
+    $('#btn-export').onclick = doExport;
+    $('#btn-import2').onclick = doImport;
+    $('#btn-del-acct').onclick = delAccount;
+    $('#btn-reset-stats').onclick = resetStats;
+    $('#overlay').onclick = function (e) { if (e.target.id === 'overlay') closeModal(null); };
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !$('#overlay').classList.contains('hide')) closeModal(null);
+    });
+    let rt = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () { if (ACC) drawEloChart(P().eloCurve); }, 180);
+    });
+  }
+
+  /* ===================== الإقلاع ===================== */
+  function boot() {
+    try {
+      bind();
+      renderAuthAccounts();
+      setAuthTab('login');
+      const last = S.lastUser();
+      if (last && S.get(last)) $('#au-user').value = last;
+      show('auth');
+      if (!X.available) {
+        $('#auth-msg').innerHTML = '<div class="err">⚠️ Web Crypto غير متاح. إفتح الصفحة عبر <b>https</b> أو <b>localhost</b> (GitHub Pages بيشتغل https تلقائياً) حتى يشتغل التشفير.</div>';
+      }
+      $('#loading').classList.add('hide');
+    } catch (e) {
+      console.error(e);
+      $('#loading').innerHTML = '<div style="text-align:center;padding:20px"><div style="font-size:40px">⚠️</div>' +
+        '<div style="font-weight:800;margin:10px 0">صار خطأ وقت التحميل</div>' +
+        '<div style="color:#9fb0c4;font-size:13px;direction:ltr">' + esc(e.message || e) + '</div></div>';
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+</body>
+</html>
